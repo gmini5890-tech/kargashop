@@ -40,206 +40,176 @@
     </style>
 </head>
 <body>
-
     <div class="header">
         <div class="logo">GayerShop</div>
         <div class="badge-premium">BEST SELLER</div>
     </div>
-
     <div class="categories">
         <div class="tab active" onclick="filterCategory('all', this)">Все товары</div>
         <div class="tab" onclick="filterCategory('telegram', this)">Telegram</div>
         <div class="tab" onclick="filterCategory('tiktok', this)">TikTok</div>
         <div class="tab" onclick="filterCategory('other', this)">Другое</div>
     </div>
-
     <div class="grid" id="shopGrid">
-        
-        <div class="card" data-category="telegram" onclick="openModal('🔍 10 БУСТОВ ДЛЯ ВАШЕГО КАНАЛА!!! (1-3)', '90', '', 'boost.png')">
-            <img src="boost.png" alt="Product">
-            <div class="card-info">
-                <div class="title">🔍 10 БУСТОВ ДЛЯ ВАШЕГО КАНАЛА!!! (1-3)</div>
-                <div class="price-row"><div class="price">90 ₽</div></div>
-            </div>
-        </div>
-
-        <div class="card" data-category="telegram" onclick="openModal('👑 💎 8000 ПОДПИСЧИКОВ НА ВАШ КАНАЛ', '120', '149', 'boostsub.png')">
-            <div class="discount-tag">-19%</div>
-            <img src="boostsub.png" alt="Product">
-            <div class="card-info">
-                <div class="title">👑 💎 8000 ПОДПИСЧИКОВ НА ВАШ КАНАЛ</div>
-                <div class="price-row">
-                    <div class="price sale">120 ₽</div>
-                    <div class="old-price">149 ₽</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card" data-category="tiktok" onclick="openModal('🥰 📥 КАК ПОПАСТЬ В РЕКОМЕНДАЦИИ В TIKTOK', '90', '', 'rekom.png')">
+        <div class="card" data-category="tiktok" onclick="openModal('🥰 📥 КАК ПОПАСТЬ В РЕКОМЕНДАЦИИ В TIKTOK', '90', '', 'rekom.png', false)">
             <img src="rekom.png" alt="Product">
-            <div class="card-info">
-                <div class="title">🥰 📥 КАК ПОПАСТЬ В РЕКОМЕНДАЦИИ В TIKTOK</div>
-                <div class="price-row"><div class="price">90 ₽</div></div>
-            </div>
+            <div class="card-info"><div class="title">🥰 📥 КАК ПОПАСТЬ В РЕКОМЕНДАЦИИ В TIKTOK</div><div class="price-row"><div class="price">90 ₽</div></div></div>
         </div>
-
-        <div class="card" data-category="other" onclick="openModal('💯 🎟 5 ГОЛОСОВ НА ВАШ АККАУНТ ВК | БЕЗ ВХОДА', '99', '', 'vk.png')">
+        <div class="card" data-category="other" onclick="openModal('💯 🎟 5 ГОЛОСОВ НА ВАШ АККАУНТ ВК | БЕЗ ВХОДА', '99', '', 'vk.png', false)">
             <img src="vk.png" alt="Product">
-            <div class="card-info">
-                <div class="title">💯 🎟 5 ГОЛОСОВ НА ВАШ АККАУНТ ВК | БЕЗ ВХОДА</div>
-                <div class="price-row"><div class="price">99 ₽</div></div>
-            </div>
+            <div class="card-info"><div class="title">💯 🎟 5 ГОЛОСОВ НА ВАШ АККАУНТ ВК | БЕЗ ВХОДА</div><div class="price-row"><div class="price">99 ₽</div></div></div>
         </div>
-
-        <div class="card" data-category="telegram" onclick="openModal('✈ КАК СНЯТЬ СПАМ-БЛОК В ТЕЛЕГРАММ ✈', '90', '', 'spamblock.png')">
-            <img src="spamblock.png" alt="Product">
-            <div class="card-info">
-                <div class="title">✈ КАК СНЯТЬ СПАМ-БЛОК В ТЕЛЕГРАММ ✈</div>
-                <div class="price-row"><div class="price">90 ₽</div></div>
-            </div>
-        </div>
-
-        <div class="card" data-category="other" onclick="openModal('💻 АКТИВАЦИЯ WINDOWS 10-11 (ЛЮБАЯ!)', '90', '', 'windows.png')">
+        <div class="card" data-category="other" onclick="openModal('💻 АКТИВАЦИЯ WINDOWS 10-11 (ЛЮБАЯ!)', '90', '', 'windows.png', false)">
             <img src="windows.png" alt="Product">
-            <div class="card-info">
-                <div class="title">💻 АКТИВАЦИЯ WINDOWS 10-11 (ЛЮБАЯ!)</div>
-                <div class="price-row"><div class="price">90 ₽</div></div>
-            </div>
+            <div class="card-info"><div class="title">💻 АКТИВАЦИЯ WINDOWS 10-11 (ЛЮБАЯ!)</div><div class="price-row"><div class="price">90 ₽</div></div></div>
         </div>
-
-        <div class="card" data-category="tiktok" onclick="openModal('🔥 ТИКТОК НАКРУТКА | 5000 просм. / 500 лайков / 500 сохр. / 500 реп.', '90', '', 'minimalistic.png')">
+        <div class="card" data-category="tiktok" onclick="openModal('🔥 ТИКТОК НАКРУТКА | 5000 просм. / 500 лайков / 500 сохр. / 500 реп.', '90', '', 'minimalistic.png', false)">
             <img src="minimalistic.png" alt="Product">
-            <div class="card-info">
-                <div class="title">🔥 ТИКТОК НАКРУТКА | 5000 просм. / 500 лайков / 500 сохр. / 500 реп.</div>
-                <div class="price-row"><div class="price">90 ₽</div></div>
-            </div>
+            <div class="card-info"><div class="title">🔥 ТИКТОК НАКРУТКА | 5000 просм. / 500 лайков / 500 сохр. / 500 реп.</div><div class="price-row"><div class="price">90 ₽</div></div></div>
         </div>
-
-        <div class="card" data-category="tiktok" onclick="openModal('⚡ TIKTOK БЫСТРЫЕ ПРОСМОТРЫ +10000', '90', '', 'fasteye.png')">
+        <div class="card" data-category="tiktok" onclick="openModal('⚡ TIKTOK БЫСТРЫЕ ПРОСМОТРЫ', '0.5', '', 'fasteye.png', true)">
             <img src="fasteye.png" alt="Product">
-            <div class="card-info">
-                <div class="title">⚡ TIKTOK БЫСТРЫЕ ПРОСМОТРЫ +10000</div>
-                <div class="price-row"><div class="price">90 ₽</div></div>
-            </div>
+            <div class="card-info"><div class="title">⚡ TIKTOK БЫСТРЫЕ ПРОСМОТРЫ</div><div class="price-row"><div class="price">0.5 ₽ / шт.</div></div></div>
         </div>
-
-        <div class="card" data-category="other" onclick="openModal('🤖 GOOGLE GEMINI PRO | Подписка на 18 месяцев', '90', '', 'gemini.png')">
+        <div class="card" data-category="other" onclick="openModal('🤖 GOOGLE GEMINI PRO | Подписка на 18 месяцев', '90', '', 'gemini.png', false)">
             <img src="gemini.png" alt="Product">
-            <div class="card-info">
-                <div class="title">🤖 GOOGLE GEMINI PRO | Подписка на 18 месяцев</div>
-                <div class="price-row"><div class="price">90 ₽</div></div>
+            <div class="card-info"><div class="title">🤖 GOOGLE GEMINI PRO | Подписка на 18 месяцев</div><div class="price-row"><div class="price">90 ₽</div></div></div>
+        </div>
+    </div>
+    <div id="telegramStepContainer" style="display: none; max-width: 600px; margin: 0 auto; padding: 15px;">
+        <button id="menuBackButton" onclick="menuGoBack()" style="display: none; background: #374151; color: white; border: none; padding: 8px 15px; border-radius: 8px; font-size: 13px; margin-bottom: 15px; cursor: pointer;">← Назад</button>
+        <div id="tgWelcomeCard" style="background: #111622; border: 1px solid #1c2536; padding: 25px; border-radius: 15px; text-align: center; cursor: pointer;" onclick="showTgRows()">
+            <img src="telegram_logo.png" alt="Telegram" style="width: 100px; height: 100px; margin-bottom: 10px; object-fit: contain;">
+            <h3 style="margin: 0; color: white; font-size: 20px;">Telegram</h3>
+            <p style="margin: 5px 0 0 0; font-size: 13px; color: #9ca3af;">Накрутка Telegram</p>
+        </div>
+        <div id="tgServicesRows" style="display: none;"><div id="tgRowsList"></div></div>
+        <div id="tgDurationMenu_boosts" style="display: none;">
+            <h4 style="margin: 0 0 15px 0; color: #9ca3af; font-size: 15px;">Выберите длительность бустов:</h4>
+            <div style="display: grid; grid-template-columns: 1fr; gap: 10px;"><button onclick="openModal('🚀 Бусты для канала (1-3 дня)', '2.2', '', 'boost3d.png', true)" style="padding: 15px; background: #007bff; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%;">1-3 Дня</button></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;"><button onclick="openModal('🚀 Бусты для канала (7 дней)', '5', '', 'boost7d.png', true)" style="padding: 15px; background: #007bff; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">7 Дней</button><button onclick="openModal('🚀 Бусты для канала (30 дней)', '22', '', 'boost30d.png', true)" style="padding: 15px; background: #007bff; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">30 Дней</button></div>
+        </div>
+        <div id="tgDurationMenu_subscribers" style="display: none;">
+            <h4 style="margin: 0 0 15px 0; color: #9ca3af; font-size: 15px;">Выберите длительность подписки:</h4>
+            <div style="display: grid; grid-template-columns: 1fr; gap: 10px;"><button onclick="openModal('👥 Подписчики на канал (1-3 дня)', '0.3', '', 'boostsub3d.png', true)" style="padding: 15px; background: #007bff; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%;">1-3 Дня</button></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;"><button onclick="openModal('👥 Подписчики на канал (7 дней)', '0.6', '', 'boostsub7d.png', true)" style="padding: 15px; background: #007bff; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">7 Дней</button><button onclick="openModal('👥 Подписчики на канал (30 дней)', '1.2', '', 'boostsub30d.png', true)" style="padding: 15px; background: #007bff; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">30 Дней</button></div>
+        </div>
+        <div id="tgDurationMenu_reactions" style="display: none;">
+            <h4 style="margin: 0 0 15px 0; color: #9ca3af; font-size: 15px;">Выберите длительность для реакций:</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <button onclick="openModal('🔥 Реакции на посты (1 день)', '0.05', '', 'reaction3d.png', true)" style="padding: 15px; background: #007bff; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">1-3 Дня</button>
+                <button onclick="openModal('🔥 Реакции на посты (7 дней)', '0.2', '', 'reaction7d.png', true)" style="padding: 15px; background: #007bff; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">7 Дней</button>
+                <button onclick="openModal('🔥 Реакции на посты (30 дней)', '0.5', '', 'reaction30d.png', true)" style="padding: 15px; background: #007bff; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">30 Дней</button>
             </div>
         </div>
-
     </div>
-
-    <!-- ИСПРАВЛЕННОЕ МОДАЛЬНОЕ ОКНО С ДВУМЯ ШАГАМИ -->
-    <div id="orderModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000;">
-        <div class="modal-content" style="background: #1f2937; padding: 20px; border-radius: 15px; width: 90%; max-width: 400px; color: #fff; position: relative;">
-            
-            <!-- Кнопка закрытия окна -->
-            <button onclick="closeModal()" style="position: absolute; top: 10px; right: 15px; background: none; border: none; color: #9ca3af; font-size: 20px; cursor: pointer;">&times;</button>
-
-            <!-- ШАГ 1: Просмотр товара перед оплатой -->
+    <div style="text-align: center; padding: 20px 10px; font-size: 11px; color: #4b5563; letter-spacing: 0.5px;">Сайт разработан Владимиром Смирновым &copy; 2026</div>
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <button onclick="closeModal()" style="position: absolute; top: 12px; right: 16px; background: none; border: none; color: #9ca3af; font-size: 22px; cursor: pointer;">&times;</button>
             <div id="step1">
-                <img id="modalImg" src="" alt="Preview" style="width: 100%; max-height: 180px; object-fit: contain; margin-bottom: 10px; border-radius: 8px;">
-                <h4 id="modalTitle" style="margin: 0 0 10px 0; font-size: 16px; line-height: 1.5; color: #f3f4f6;">Название</h4>
-                <div id="modalPrice" style="font-size: 22px; font-weight: 800; margin-bottom: 16px; color: #38bdf8;">0 ₽</div>
-                <button onclick="goToStep2()" style="width: 100%; padding: 12px; background: #0088cc; color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">Перейти к оплате</button>
-            </div>
-
-            <!-- ШАГ 2: Окно оплаты (Перевод на карту) -->
-            <div id="step2" style="display: none; text-align: center;">
-                <h4 style="margin: 0 0 10px 0; font-size: 18px; color: #f3f4f6;">Оплата заказа</h4>
-                <p style="font-size: 14px; color: #9ca3af; margin-bottom: 15px;">Переведите сумму на карту ниже и нажмите «Проверить оплату»</p>
-                
-                <div style="font-size: 24px; font-weight: 800; margin-bottom: 15px; color: #38bdf8;" id="payAmount">0 ₽</div>
-                
-                <!-- Поле с номером карты -->
-                <div onclick="copyCard()" style="background: #111827; padding: 12px; border-radius: 8px; margin-bottom: 15px; cursor: pointer; border: 1px dashed #0088cc; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-family: monospace; font-size: 16px; letter-spacing: 1px;">4276 0000 0000 0000</span>
-                    <span style="font-size: 12px; color: #0088cc;">📋</span>
+                <img id="modalImg" src="" alt="Preview">
+                <h4 id="modalTitle" style="margin: 0 0 10px 0; font-size: 16px; line-height: 1.4; color: #e5e7eb;">Название</h4>
+                <div id="quantityBlock" style="display: none; margin-bottom: 16px; text-align: left;">
+                    <label style="display: block; font-size: 13px; color: #9ca3af; margin-bottom: 6px;">Введите количество:</label>
+                    <input type="number" id="itemQuantity" value="100" min="1" oninput="calculateTotal()" style="width: 100%; padding: 12px; background: #080b10; border: 1px solid #1c2536; border-radius: 10px; color: white; font-size: 15px; font-weight: 600;">
                 </div>
-
-                <a href="https://t.me/Smeshnoy_Ny_Tema" target="_blank" style="display: block; text-align: center; text-decoration: none; width: 100%; box-sizing: border-box; padding: 12px; background: #22c55e; color: white; border-radius: 10px; font-weight: 600; cursor: pointer;">Оформить заказ у админа</a>
-
-
+                <div style="font-size: 13px; color: #9ca3af; margin-bottom: 2px;" id="priceLabel">Цена:</div>
+                <div id="modalPrice" style="font-size: 24px; font-weight: 800; margin-bottom: 16px; color: #007bff;">0 ₽</div>
+                <button onclick="goToStep2()" class="btn">Перейти к оплате</button>
+            </div>
+            <div id="step2" style="display: none;">
+                <img id="modalImgStep2" src="" alt="Preview" style="width: 100%; border-radius: 12px; margin-bottom: 16px; aspect-ratio: 16/11; object-fit: cover; border: 1px solid #1c2536; display: none;">
+                <h4 style="margin: 0 0 8px 0; font-size: 18px; color: #fff;">Оплата заказа</h4>
+                <p style="font-size: 13px; color: #9ca3af; margin: 0 0 16px 0;">Переведите сумму на карту ниже и нажмите кнопку</p>
+                <div style="font-size: 26px; font-weight: 800; margin-bottom: 16px; color: #10b981;" id="payAmount">0 ₽</div>
+                <div onclick="copyCard()" class="copy-box">4276 0000 0000 0000</div>
+                <a href="https://t.me" target="_blank" class="btn btn-pay">Оформить заказ у админа</a>
+            </div>
         </div>
     </div>
-
-    <!-- Уведомление о копировании карты -->
-    <div id="toast" style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #22c55e; color: white; padding: 10px 20px; border-radius: 20px; font-size: 14px; z-index: 2000;">
-        Номер карты скопирован!
-    </div>
-
-    <!-- ИСПРАВЛЕННЫЕ СКРИПТЫ -->
-    <script type="text/javascript" data-translate="no">
-        let currentPrice = '';
-        const cardNumber = "4276000000000000"; // Замените на вашу реальную карту
-
+    <div id="toast" class="toast">Номер карты скопирован!</div>
+        <script type="text/javascript">
+        let currentPrice = 0; let isCountable = false; let tgMenuStep = 'welcome'; const cardNumber = "4276000000000000"; 
         function filterCategory(category, element) {
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-            element.classList.add('active');
-            
-            document.querySelectorAll('.card').forEach(card => {
-                if (category === 'all' || card.getAttribute('data-category') === category) {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        }
-
-        function openModal(title, price, oldPrice, imgUrl) {
-            currentPrice = price;
-            
-            const modalTitle = document.getElementById('modalTitle');
-            const modalPrice = document.getElementById('modalPrice');
-            const modalImg = document.getElementById('modalImg');
-            const step1 = document.getElementById('step1');
-            const step2 = document.getElementById('step2');
-            const orderModal = document.getElementById('orderModal');
-
-            if (modalTitle) modalTitle.innerText = title;
-            if (modalPrice) modalPrice.innerText = price + ' ₽';
-            if (modalImg) modalImg.src = imgUrl;
-            
-            if (step1) step1.style.display = 'block';
-            if (step2) step2.style.display = 'none';
-            if (orderModal) orderModal.style.display = 'flex';
-        }
-
-        function goToStep2() {
-            const payAmount = document.getElementById('payAmount');
-            const step1 = document.getElementById('step1');
-            const step2 = document.getElementById('step2');
-
-            if (payAmount) payAmount.innerText = currentPrice + ' ₽';
-            if (step1) step1.style.display = 'none';
-            if (step2) step2.style.display = 'block';
-        }
-
-        function closeModal() {
-            const orderModal = document.getElementById('orderModal');
-            if (orderModal) orderModal.style.display = 'none';
-        }
-
-        function copyCard() {
-            navigator.clipboard.writeText(cardNumber);
-            const toast = document.getElementById('toast');
-            if (toast) {
-                toast.style.display = 'block';
-                setTimeout(() => { toast.style.display = 'none'; }, 1500);
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active')); element.classList.add('active');
+            const shopGrid = document.getElementById('shopGrid'); const telegramContainer = document.getElementById('telegramStepContainer');
+            if (category === 'telegram') {
+                if (shopGrid) shopGrid.style.display = 'none'; if (telegramContainer) telegramContainer.style.display = 'block'; resetTgMenu();
+            } else {
+                if (shopGrid) shopGrid.style.display = 'flex'; if (telegramContainer) telegramContainer.style.display = 'none';
+                document.querySelectorAll('.card').forEach(card => {
+                    if (category === 'all' || card.getAttribute('data-category') === category) { card.style.display = 'flex'; } else { card.style.display = 'none'; }
+                });
             }
         }
-
-        // Инициализация Telegram WebApp
-        if (typeof window.Telegram !== 'undefined' && window.Telegram.WebApp) {
-            const tg = window.Telegram.WebApp;
-            tg.ready();
-            tg.expand();
+        const tgServices = [
+            { name: "👥 Подписчики", type: "duration", menuId: "tgDurationMenu_subscribers" },
+            { name: "🔥 Реакции", type: "duration", menuId: "tgDurationMenu_reactions" },
+            { name: "🚀 Бусты", type: "duration", menuId: "tgDurationMenu_boosts" }
+        ];
+        function showTgRows() {
+            tgMenuStep = 'rows'; document.getElementById('tgWelcomeCard').style.display = 'none'; document.getElementById('tgServicesRows').style.display = 'block'; document.getElementById('menuBackButton').style.display = 'inline-block';
+            const listContainer = document.getElementById('tgRowsList');
+            if (listContainer) {
+                listContainer.innerHTML = '';
+                tgServices.forEach(service => {
+                    const row = document.createElement('div');
+                    row.style = "background: #111622; padding: 16px; margin-bottom: 10px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid #1c2536; color: white; font-weight: 500; font-size: 14px;";
+                    row.innerHTML = `<span>${service.name}</span> <span style="color: #4b5563;">→</span>`;
+                    row.onclick = function() { showTgDuration(service.menuId); }; listContainer.appendChild(row);
+                });
+            }
         }
+        function showTgDuration(menuId) { tgMenuStep = menuId; document.getElementById('tgServicesRows').style.display = 'none'; document.getElementById(menuId).style.display = 'block'; }
+        function menuGoBack() {
+            if (tgMenuStep === 'rows') { resetTgMenu(); } else {
+                document.getElementById(tgMenuStep).style.display = 'none'; document.getElementById('tgServicesRows').style.display = 'block'; tgMenuStep = 'rows';
+            }
+        }
+        function resetTgMenu() {
+            tgMenuStep = 'welcome'; document.getElementById('menuBackButton').style.display = 'none'; document.getElementById('tgWelcomeCard').style.display = 'block'; document.getElementById('tgServicesRows').style.display = 'none';
+            if(document.getElementById('tgDurationMenu_boosts')) document.getElementById('tgDurationMenu_boosts').style.display = 'none';
+            if(document.getElementById('tgDurationMenu_subscribers')) document.getElementById('tgDurationMenu_subscribers').style.display = 'none';
+            if(document.getElementById('tgDurationMenu_reactions')) document.getElementById('tgDurationMenu_reactions').style.display = 'none';
+        }
+        function openModal(title, price, oldPrice, imgUrl, isRateBased = false) {
+            currentPrice = parseFloat(price); isCountable = isRateBased;
+            const modalTitle = document.getElementById('modalTitle'); const modalImg = document.getElementById('modalImg');
+            const qtyBlock = document.getElementById('quantityBlock'); const priceLabel = document.getElementById('priceLabel'); const qtyInput = document.getElementById('itemQuantity');
+            const step1 = document.getElementById('step1'); const step2 = document.getElementById('step2'); const orderModal = document.getElementById('orderModal');
+            if (modalTitle) modalTitle.innerText = title;
+            if (imgUrl && imgUrl !== '') { if (modalImg) { modalImg.src = imgUrl; modalImg.style.display = 'block'; } } else { if (modalImg) modalImg.style.display = 'none'; }
+            if (isCountable && qtyBlock && priceLabel && qtyInput) {
+                qtyBlock.style.display = 'block'; priceLabel.innerText = "Итого к оплате:"; qtyInput.value = "100"; calculateTotal();
+            } else {
+                if (qtyBlock) qtyBlock.style.display = 'none'; if (priceLabel) priceLabel.innerText = "Цена:";
+                const modalPrice = document.getElementById('modalPrice'); if (modalPrice) modalPrice.innerText = currentPrice + ' ₽';
+            }
+            if (step1) step1.style.display = 'block'; if (step2) step2.style.display = 'none'; if (orderModal) orderModal.style.display = 'flex';
+        }
+        function calculateTotal() {
+            if (!isCountable) return;
+            const qtyInput = document.getElementById('itemQuantity'); const modalPrice = document.getElementById('modalPrice'); if (!qtyInput || !modalPrice) return;
+            let count = parseInt(qtyInput.value); if (isNaN(count) || count < 1) count = 0;
+            let total = count * currentPrice; modalPrice.innerText = total.toFixed(total % 1 === 0 ? 0 : 2) + ' ₽';
+        }
+        function goToStep2() {
+            const payAmount = document.getElementById('payAmount'); const modalPrice = document.getElementById('modalPrice');
+            const modalImg = document.getElementById('modalImg'); const modalImgStep2 = document.getElementById('modalImgStep2');
+            const step1 = document.getElementById('step1'); const step2 = document.getElementById('step2');
+            if (payAmount && modalPrice) payAmount.innerText = modalPrice.innerText;
+            if (modalImg && modalImgStep2) {
+                if (modalImg.style.display === 'block' && modalImg.src) { modalImgStep2.src = modalImg.src; modalImgStep2.style.display = 'block'; } else { modalImgStep2.style.display = 'none'; }
+            }
+            if (step1) step1.style.display = 'none'; if (step2) step2.style.display = 'block';
+        }
+        function closeModal() { const orderModal = document.getElementById('orderModal'); if (orderModal) orderModal.style.display = 'none'; }
+        function copyCard() {
+            navigator.clipboard.writeText(cardNumber); const toast = document.getElementById('toast');
+            if (toast) { toast.style.display = 'block'; setTimeout(() => { toast.style.display = 'none'; }, 1500); }
+        }
+        if (typeof window.Telegram !== 'undefined' && window.Telegram.WebApp) { const tg = window.Telegram.WebApp; tg.ready(); tg.expand(); }
     </script>
 </body>
-
 </html>
