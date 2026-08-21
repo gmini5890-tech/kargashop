@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KargaShop</title>
+    <title>GayerShop</title>
     <script src="https://telegram.org"></script>
     <style>
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -23,20 +23,18 @@
         .title { font-size: 12px; font-weight: 600; line-height: 1.4; color: #e5e7eb; margin: 0 0 10px 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; height: 50px; }
         .price-row { display: flex; align-items: center; gap: 8px; margin-top: auto; }
         .price { color: #fff; font-weight: 700; font-size: 16px; }
-        .price.sale { color: #ef4444; }
-        .old-price { color: #4b5563; text-decoration: line-through; font-size: 12px; }
-        .discount-tag { background: #ef4444; color: white; font-size: 10px; font-weight: bold; padding: 3px 6px; border-radius: 6px; position: absolute; top: 8px; right: 8px; z-index: 2; box-shadow: 0 2px 6px rgba(239,68,68,0.3); }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(4, 6, 10, 0.85); justify-content: center; align-items: center; z-index: 100; padding: 16px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
         .modal-content { background: #111622; width: 100%; max-width: 350px; padding: 24px; border-radius: 20px; border: 1px solid #242f47; box-shadow: 0 20px 40px rgba(0,0,0,0.7); text-align: center; position: relative; animation: slideUp 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         .modal img { width: 100%; border-radius: 12px; margin-bottom: 16px; aspect-ratio: 16/11; object-fit: cover; border: 1px solid #1c2536; }
         .btn { display: flex; align-items: center; justify-content: center; width: 100%; background: #007bff; color: white; padding: 14px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 14px; font-size: 14px; text-decoration: none; transition: all 0.15s ease; }
-        .btn:active { transform: scale(0.97); }
+        .btn:disabled { background: #242f47 !important; color: #4b5563 !important; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+        .btn:active:not(:disabled) { transform: scale(0.97); }
         .btn-pay { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 12px rgba(16,185,129,0.3); }
-        .btn-close { background: transparent; color: #9ca3af; font-size: 13px; border: 1px solid #1c2536; margin-top: 10px; }
         .copy-box { background: #182032; padding: 14px; border-radius: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 15px; margin: 14px 0; border: 1px dashed #3b4f74; cursor: pointer; color: #38bdf8; font-weight: 700; transition: background 0.2s ease; }
-        .copy-box:active { background: #202b44; }
         .toast { display: none; position: fixed; top: 24px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; padding: 10px 20px; border-radius: 30px; font-size: 13px; font-weight: 700; z-index: 200; box-shadow: 0 4px 12px rgba(16,185,129,0.4); }
+        .error-msg { color: #ef4444; font-size: 12px; margin-top: 6px; display: none; font-weight: 600; text-align: left; line-height: 1.3; }
+        .select-emoji { width: 100%; padding: 12px; background: #080b10; border: 1px solid #1c2536; border-radius: 10px; color: white; font-size: 15px; font-weight: 600; margin-top: 8px; display: none; }
     </style>
 </head>
 <body>
@@ -44,172 +42,352 @@
         <div class="logo">GayerShop</div>
         <div class="badge-premium">BEST SELLER</div>
     </div>
+    
     <div class="categories">
-        <div class="tab active" onclick="filterCategory('all', this)">Все товары</div>
-        <div class="tab" onclick="filterCategory('telegram', this)">Telegram</div>
-        <div class="tab" onclick="filterCategory('tiktok', this)">TikTok</div>
-        <div class="tab" onclick="filterCategory('other', this)">Другое</div>
+        <div class="tab active" onclick="filterCategory('main', this)">Главная</div>
+        <div class="tab" onclick="filterCategory('social', this)">Соцсети</div>
+        <div class="tab" onclick="filterCategory('ai', this)">ИИ</div>
+        <div class="tab" onclick="filterCategory('promo', this)">Продвижение</div>
+        <div class="tab" onclick="filterCategory('soft', this)">Софт</div>
     </div>
-    <div class="grid" id="shopGrid">
-        <div class="card" data-category="tiktok" onclick="openModal('🥰 📥 КАК ПОПАСТЬ В РЕКОМЕНДАЦИИ В TIKTOK', '90', '', 'rekom.png', false)">
-            <img src="rekom.png" alt="Product">
-            <div class="card-info"><div class="title">🥰 📥 КАК ПОПАСТЬ В РЕКОМЕНДАЦИИ В TIKTOK</div><div class="price-row"><div class="price">90 ₽</div></div></div>
-        </div>
-        <div class="card" data-category="other" onclick="openModal('💯 🎟 5 ГОЛОСОВ НА ВАШ АККАУНТ ВК | БЕЗ ВХОДА', '99', '', 'vk.png', false)">
-            <img src="vk.png" alt="Product">
-            <div class="card-info"><div class="title">💯 🎟 5 ГОЛОСОВ НА ВАШ АККАУНТ ВК | БЕЗ ВХОДА</div><div class="price-row"><div class="price">99 ₽</div></div></div>
-        </div>
-        <div class="card" data-category="other" onclick="openModal('💻 АКТИВАЦИЯ WINDOWS 10-11 (ЛЮБАЯ!)', '90', '', 'windows.png', false)">
-            <img src="windows.png" alt="Product">
-            <div class="card-info"><div class="title">💻 АКТИВАЦИЯ WINDOWS 10-11 (ЛЮБАЯ!)</div><div class="price-row"><div class="price">90 ₽</div></div></div>
-        </div>
-        <div class="card" data-category="tiktok" onclick="openModal('🔥 ТИКТОК НАКРУТКА | 5000 просм. / 500 лайков / 500 сохр. / 500 реп.', '90', '', 'minimalistic.png', false)">
-            <img src="minimalistic.png" alt="Product">
-            <div class="card-info"><div class="title">🔥 ТИКТОК НАКРУТКА | 5000 просм. / 500 лайков / 500 сохр. / 500 реп.</div><div class="price-row"><div class="price">90 ₽</div></div></div>
-        </div>
-        <div class="card" data-category="tiktok" onclick="openModal('⚡ TIKTOK БЫСТРЫЕ ПРОСМОТРЫ', '0.5', '', 'fasteye.png', true)">
-            <img src="fasteye.png" alt="Product">
-            <div class="card-info"><div class="title">⚡ TIKTOK БЫСТРЫЕ ПРОСМОТРЫ</div><div class="price-row"><div class="price">0.5 ₽ / шт.</div></div></div>
-        </div>
-        <div class="card" data-category="other" onclick="openModal('🤖 GOOGLE GEMINI PRO | Подписка на 18 месяцев', '90', '', 'gemini.png', false)">
-            <img src="gemini.png" alt="Product">
-            <div class="card-info"><div class="title">🤖 GOOGLE GEMINI PRO | Подписка на 18 месяцев</div><div class="price-row"><div class="price">90 ₽</div></div></div>
+        <!-- Главная страница -->
+    <div id="mainPageContainer" style="display: block; max-width: 600px; margin: 0 auto; padding: 15px; text-align: center;">
+        <div style="background: #111622; border: 1px solid #1c2536; padding: 40px 20px; border-radius: 15px;">
+            <h2 style="margin: 0 0 10px 0; color: #007bff;">Добро пожаловать в GayerShop!</h2>
+            <p style="margin: 0; color: #9ca3af; font-size: 14px; line-height: 1.6;">
+                Здесь будет текст вашего заказчика.<br>Скажите его мне, и я заменю этот блок на красивое описание!
+            </p>
         </div>
     </div>
-    <div id="telegramStepContainer" style="display: none; max-width: 600px; margin: 0 auto; padding: 15px;">
+
+    <!-- Вкладка Соцсети -->
+    <div id="socialStepContainer" style="display: none; max-width: 600px; margin: 0 auto; padding: 15px;">
         <button id="menuBackButton" onclick="menuGoBack()" style="display: none; background: #374151; color: white; border: none; padding: 8px 15px; border-radius: 8px; font-size: 13px; margin-bottom: 15px; cursor: pointer;">← Назад</button>
-        <div id="tgWelcomeCard" style="background: #111622; border: 1px solid #1c2536; padding: 25px; border-radius: 15px; text-align: center; cursor: pointer;" onclick="showTgRows()">
-            <img src="telegram_logo.png" alt="Telegram" style="width: 100px; height: 100px; margin-bottom: 10px; object-fit: contain;">
-            <h3 style="margin: 0; color: white; font-size: 20px;">Telegram</h3>
-            <p style="margin: 5px 0 0 0; font-size: 13px; color: #9ca3af;">Накрутка Telegram</p>
+        
+        <div id="socialWelcomeCard" style="display: flex; flex-direction: column; gap: 16px;">
+            <!-- Плитка Telegram -->
+            <div style="background: #111622; border: 1px solid #1c2536; padding: 25px; border-radius: 15px; text-align: center; cursor: pointer;" onclick="showPlatformMenu('tg')">
+                <img src="telegram_logo.png" alt="Telegram" style="width: 100px; height: 100px; margin-bottom: 10px; object-fit: contain;">
+                <h3 style="margin: 0; color: white; font-size: 20px;">Telegram</h3>
+                <p style="margin: 5px 0 0 0; font-size: 13px; color: #9ca3af;">Подписчики, реакции, бусты и спамблок</p>
+            </div>
+            <!-- Плитка TikTok -->
+            <div style="background: #111622; border: 1px solid #1c2536; padding: 25px; border-radius: 15px; text-align: center; cursor: pointer;" onclick="showPlatformMenu('tiktok')">
+                <img src="tiktok_logo.png" alt="TikTok" style="width: 100px; height: 100px; margin-bottom: 10px; object-fit: contain;">
+                <h3 style="margin: 0; color: white; font-size: 20px;">TikTok</h3>
+                <p style="margin: 5px 0 0 0; font-size: 13px; color: #9ca3af;">Поштучная накрутка продвижения TikTok</p>
+            </div>
+            <!-- Плитка ВКонтакте -->
+            <div style="background: #111622; border: 1px solid #1c2536; padding: 25px; border-radius: 15px; text-align: center; cursor: pointer;" onclick="showPlatformMenu('vk')">
+                <img src="vk_logo.png" alt="VK" style="width: 100px; height: 100px; margin-bottom: 10px; object-fit: contain;">
+                <h3 style="margin: 0; color: white; font-size: 20px;">ВКонтакте</h3>
+                <p style="margin: 5px 0 0 0; font-size: 13px; color: #9ca3af;">Голоса, лайки, просмотры и подписчики ВК</p>
+            </div>
+            <!-- Плитка YouTube -->
+            <div style="background: #111622; border: 1px solid #1c2536; padding: 25px; border-radius: 15px; text-align: center; cursor: pointer;" onclick="alert('Данный раздел сейчас в разработке')">
+                <img src="youtube_logo.png" alt="YouTube" style="width: 100px; height: 100px; margin-bottom: 10px; object-fit: contain;">
+                <h3 style="margin: 0; color: white; font-size: 20px;">YouTube</h3>
+                <p style="margin: 5px 0 0 0; font-size: 13px; color: #9ca3af;">Этот раздел в разработке</p>
+            </div>
         </div>
+
+        <!-- Контейнеры для вложенных папок услуг -->
         <div id="tgServicesRows" style="display: none;"><div id="tgRowsList"></div></div>
-        <div id="tgDurationMenu_boosts" style="display: none;">
-            <h4 style="margin: 0 0 15px 0; color: #9ca3af; font-size: 15px;">Выберите длительность бустов:</h4>
-            <div style="display: grid; grid-template-columns: 1fr; gap: 10px;"><button onclick="openModal('🚀 Бусты для канала (1-3 дня)', '2.2', '', 'boost3d.png', true)" style="padding: 15px; background: #007bff; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%;">1-3 Дня</button></div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;"><button onclick="openModal('🚀 Бусты для канала (7 дней)', '5', '', 'boost7d.png', true)" style="padding: 15px; background: #007bff; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">7 Дней</button><button onclick="openModal('🚀 Бусты для канала (30 дней)', '22', '', 'boost30d.png', true)" style="padding: 15px; background: #007bff; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">30 Дней</button></div>
-        </div>
-        <div id="tgDurationMenu_subscribers" style="display: none;">
-            <h4 style="margin: 0 0 15px 0; color: #9ca3af; font-size: 15px;">Выберите длительность подписки:</h4>
-            <div style="display: grid; grid-template-columns: 1fr; gap: 10px;"><button onclick="openModal('👥 Подписчики на канал (1-3 дня)', '0.3', '', 'boostsub3d.png', true)" style="padding: 15px; background: #007bff; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%;">1-3 Дня</button></div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;"><button onclick="openModal('👥 Подписчики на канал (7 дней)', '0.6', '', 'boostsub7d.png', true)" style="padding: 15px; background: #007bff; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">7 Дней</button><button onclick="openModal('👥 Подписчики на канал (30 дней)', '1.2', '', 'boostsub30d.png', true)" style="padding: 15px; background: #007bff; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">30 Дней</button></div>
-        </div>
-        <div id="tgDurationMenu_reactions" style="display: none;">
-            <h4 style="margin: 0 0 15px 0; color: #9ca3af; font-size: 15px;">Выберите длительность для реакций:</h4>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <button onclick="openModal('🔥 Реакции на посты (1 день)', '0.05', '', 'reaction3d.png', true)" style="padding: 15px; background: #007bff; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">1-3 Дня</button>
-                <button onclick="openModal('🔥 Реакции на посты (7 дней)', '0.2', '', 'reaction7d.png', true)" style="padding: 15px; background: #007bff; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">7 Дней</button>
-                <button onclick="openModal('🔥 Реакции на посты (30 дней)', '0.5', '', 'reaction30d.png', true)" style="padding: 15px; background: #007bff; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">30 Дней</button>
+        <div id="tgInnerMenuRows" style="display: none;"><div id="tgInnerList"></div></div>
+        <div id="tiktokServicesRows" style="display: none;"><div id="tiktokRowsList"></div></div>
+        <div id="vkServicesRows" style="display: none;"><div id="vkRowsList"></div></div>
+    </div>
+        <!-- Вкладка ИИ -->
+    <div id="aiGrid" class="grid" style="display: none;">
+        <div class="card" onclick="openModal('🤖 GOOGLE GEMINI PRO | Подписка на 18 месяцев', 69, 'gemini.png', false)">
+            <img src="gemini.png" alt="Gemini">
+            <div class="card-info">
+                <div class="title">🤖 GOOGLE GEMINI PRO | Подписка на 18 месяцев</div>
+                <div class="price-row"><div class="price">69 ₽</div></div>
             </div>
         </div>
     </div>
-    <div style="text-align: center; padding: 20px 10px; font-size: 11px; color: #4b5563; letter-spacing: 0.5px;">Сайт разработан Владимиром Смирновым &copy; 2026</div>
+
+    <!-- Вкладка Продвижение -->
+    <div id="promoGrid" class="grid" style="display: none;">
+        <div class="card" onclick="openModal('🥰 📥 КАК ПОПАСТЬ В РЕКОМЕНДАЦИИ В TIKTOK', 15, 'rekom.png', false)">
+            <img src="rekom.png" alt="Gaid">
+            <div class="card-info">
+                <div class="title">🥰 📥 КАК ПОПАСТЬ В РЕКОМЕНДАЦИИ В TIKTOK</div>
+                <div class="price-row"><div class="price">15 ₽</div></div>
+            </div>
+        </div>
+        <div class="card" onclick="openModal('🔥 ТИКТОК НАКРУТКА ПАК МИНИМАЛИСТИК', 90, 'minimalistic.png', false)">
+            <img src="minimalistic.png" alt="Pack">
+            <div class="card-info">
+                <div class="title">🔥 ТИКТОК НАКРУТКА ПАК МИНИМАЛИСТИК</div>
+                <div class="price-row"><div class="price">90 ₽</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Вкладка Софт -->
+    <div id="softGrid" class="grid" style="display: none;">
+        <div class="card" onclick="openModal('💻 АКТИВАЦИЯ WINDOWS 10-11 (ЛЮБАЯ!)', 100, 'windows.png', false)">
+            <img src="windows.png" alt="Windows">
+            <div class="card-info">
+                <div class="title">💻 АКТИВАЦИЯ WINDOWS 10-11 (ЛЮБАЯ!)</div>
+                <div class="price-row"><div class="price">100 ₽</div></div>
+            </div>
+        </div>
+    </div>
+        <div style="text-align: center; padding: 20px 10px; font-size: 11px; color: #4b5563; letter-spacing: 0.5px;">Сайт разработан Владимиром Смирновым &copy; 2026</div>
+
+    <!-- Модальное окно -->
     <div id="orderModal" class="modal">
         <div class="modal-content">
             <button onclick="closeModal()" style="position: absolute; top: 12px; right: 16px; background: none; border: none; color: #9ca3af; font-size: 22px; cursor: pointer;">&times;</button>
             <div id="step1">
                 <img id="modalImg" src="" alt="Preview">
                 <h4 id="modalTitle" style="margin: 0 0 10px 0; font-size: 16px; line-height: 1.4; color: #e5e7eb;">Название</h4>
+                
                 <div id="quantityBlock" style="display: none; margin-bottom: 16px; text-align: left;">
                     <label style="display: block; font-size: 13px; color: #9ca3af; margin-bottom: 6px;">Введите количество:</label>
                     <input type="number" id="itemQuantity" value="100" min="1" oninput="calculateTotal()" style="width: 100%; padding: 12px; background: #080b10; border: 1px solid #1c2536; border-radius: 10px; color: white; font-size: 15px; font-weight: 600;">
+                    <div id="errorMsg" class="error-msg">Минимальное количество для заказа: 50</div>
+                    
+                    <!-- Селектор эмодзи -->
+                    <select id="emojiSelector" class="select-emoji">
+                        <option value="👍">👍 Большой палец вверх</option>
+                        <option value="❤️">❤️ Сердце</option>
+                        <option value="🔥">🔥 Огонь</option>
+                        <option value="🎉">🎉 Праздник</option>
+                        <option value="🤩">🤩 Вау</option>
+                        <option value="⚡">⚡ Молния</option>
+                        <option value="🤡">🤡 Клоун</option>
+                    </select>
                 </div>
+
                 <div style="font-size: 13px; color: #9ca3af; margin-bottom: 2px;" id="priceLabel">Цена:</div>
                 <div id="modalPrice" style="font-size: 24px; font-weight: 800; margin-bottom: 16px; color: #007bff;">0 ₽</div>
-                <button onclick="goToStep2()" class="btn">Перейти к оплате</button>
+                <button onclick="goToStep2()" id="nextStepBtn" class="btn">Перейти к оплате</button>
             </div>
+            
             <div id="step2" style="display: none;">
                 <img id="modalImgStep2" src="" alt="Preview" style="width: 100%; border-radius: 12px; margin-bottom: 16px; aspect-ratio: 16/11; object-fit: cover; border: 1px solid #1c2536; display: none;">
                 <h4 style="margin: 0 0 8px 0; font-size: 18px; color: #fff;">Оплата заказа</h4>
-                <p style="font-size: 13px; color: #9ca3af; margin: 0 0 16px 0;">Переведите сумму на карту ниже и нажмите кнопку</p>
                 <div style="font-size: 26px; font-weight: 800; margin-bottom: 16px; color: #10b981;" id="payAmount">0 ₽</div>
-                <div onclick="copyCard()" class="copy-box">4276 0000 0000 0000</div>
                 <a href="https://t.me" target="_blank" class="btn btn-pay">Оформить заказ у админа</a>
             </div>
         </div>
     </div>
     <div id="toast" class="toast">Номер карты скопирован!</div>
-        <script type="text/javascript">
-        let currentPrice = 0; let isCountable = false; let tgMenuStep = 'welcome'; const cardNumber = "4276000000000000"; 
+
+    <script type="text/javascript">
+                let currentPrice = 0; let isCountable = false; let minLimit = 1; let activePlatform = ''; let currentStep = 'welcome'; const cardNumber = "4276000000000000"; 
+        
         function filterCategory(category, element) {
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active')); element.classList.add('active');
-            const shopGrid = document.getElementById('shopGrid'); const telegramContainer = document.getElementById('telegramStepContainer');
-            if (category === 'telegram') {
-                if (shopGrid) shopGrid.style.display = 'none'; if (telegramContainer) telegramContainer.style.display = 'block'; resetTgMenu();
+            ['mainPageContainer', 'socialStepContainer', 'aiGrid', 'promoGrid', 'softGrid'].forEach(id => {
+                const el = document.getElementById(id); if(el) el.style.display = 'none';
+            });
+            if (category === 'main') document.getElementById('mainPageContainer').style.display = 'block';
+            else if (category === 'social') { document.getElementById('socialStepContainer').style.display = 'block'; resetSocialMenu(); }
+            else if (category === 'ai') document.getElementById('aiGrid').style.display = 'flex';
+            else if (category === 'promo') document.getElementById('promoGrid').style.display = 'flex';
+            else if (category === 'soft') document.getElementById('softGrid').style.display = 'flex';
+        }
+
+        // Обновленная база данных тарифов строго по ТЗ
+        const subProducts = {
+            tg_subscribers: [
+                { name: "⭐️ Telegram Подписчики [30 дней без списаний]", price: 0.067, img: 'boostsub30d.png', min: 10, isDefault: true },
+                { name: "⭐️ Telegram Подписчики [1-3 дня без списаний]", price: 0.03, img: 'boostsub3d.png', min: 100 },
+                { name: "⭐️ Telegram Подписчики [7 дней без списаний]", price: 0.042, img: 'boostsub7d.png', min: 10 }
+            ],
+            tg_reactions: [
+                { name: "Telegram Позитивные Реакции [❤️‍🔥 🔥 💯 🎉 🥰 😍]", price: 0.003, img: 'reaction.png', min: 50, isDefault: true },
+                { name: "Telegram Реакция [👍❤️🔥🎉]", price: 0.003, img: 'reaction.png', min: 50 },
+                { name: "Одна любая реакция в телеграмм (выбор эмодзи)", price: 0.004, img: 'reaction.png', min: 50, hasEmojiSelect: true }
+            ],
+            tg_boosts: [
+                { name: "🚀 Бусты для канала (1-3 дня)", price: 2.2, img: 'boost3d.png', min: 1 },
+                { name: "🚀 Бусты для канала (7 дней)", price: 5.0, img: 'boost7d.png', min: 1 },
+                { name: "🚀 Бусты для канала (30 дней)", price: 22.0, img: 'boost30d.png', min: 1 }
+            ],
+            tiktok: [
+                { name: "👥 TikTok Подписчики [Без гарантии⛔️]", price: 1.5, img: 'tiktok_sub.png', min: 50 },
+                { name: "📥 TikTok Просмотры [Без гарантии ⛔️]", price: 0.001, img: 'tiktok_eye.png', min: 100 },
+                { name: "⭐️ TikTok Просмотры [Без списаний]", price: 0.009, img: 'tiktok_eye.png', min: 100 },
+                { name: "⭐️ TikTok Лайки [Без гарантии⛔️]", price: 0.04, img: 'tiktok_like.png', min: 10 },
+                { name: "⭐️ TikTok Лайки {Гарантия 30 дней}", price: 0.09, img: 'tiktok_like.png', min: 10 },
+                { name: "TikTok Сохранения [Без списаний ♻️]", price: 0.0019, img: 'tiktok_save.png', min: 50 },
+                { name: "TikTok Репосты", price: 0.03, img: 'tiktok_repost.png', min: 10 }
+            ],
+            vk: [
+                { name: "🎟 Голоса VK", price: 10.0, img: 'vk.png', min: 1 },
+                { name: "👁 Просмотры VK", price: 0.04, img: 'vk_eye.png', min: 1 },
+                { name: "❤️ Лайки VK", price: 0.05, img: 'vk_like.png', min: 1 },
+                { name: "👥 Подписчики VK", price: 0.11, img: 'vk_sub.png', min: 1 }
+            ]
+        };
+
+        const tgFolders = [
+            { name: "👥 Подписчики", id: "tg_subscribers" },
+            { name: "🔥 Реакции", id: "tg_reactions" },
+            { name: "🚀 Бусты", id: "tg_boosts" },
+            { name: "⚙️ Снятие Spamblock", id: "spamblock" }
+        ];
+
+        function showPlatformMenu(platform) {
+            activePlatform = platform; currentStep = 'platform_rows';
+            document.getElementById('socialWelcomeCard').style.display = 'none';
+            document.getElementById('menuBackButton').style.display = 'inline-block';
+            
+            if (platform === 'tg') {
+                const listContainer = document.getElementById('tgRowsList');
+                document.getElementById('tgServicesRows').style.display = 'block';
+                if (listContainer) {
+                    listContainer.innerHTML = '';
+                    tgFolders.forEach(folder => {
+                        const row = document.createElement('div');
+                        row.style = "background: #111622; padding: 16px; margin-bottom: 10px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid #1c2536; color: white; font-weight: 500; font-size: 14px;";
+                        row.innerHTML = `<span>${folder.name}</span> <span style="color: #4b5563;">→</span>`;
+                        if (folder.id === 'spamblock') {
+                            row.onclick = function() { openModal('⚙️ Снятие Spamblock Telegram', 90, 'spamblock.png', false); };
+                        } else {
+                            row.onclick = function() { showTgInnerFolder(folder.id); };
+                        }
+                        listContainer.appendChild(row);
+                    });
+                }
             } else {
-                if (shopGrid) shopGrid.style.display = 'flex'; if (telegramContainer) telegramContainer.style.display = 'none';
-                document.querySelectorAll('.card').forEach(card => {
-                    if (category === 'all' || card.getAttribute('data-category') === category) { card.style.display = 'flex'; } else { card.style.display = 'none'; }
-                });
+                const listId = platform + 'ServicesRows';
+                const listContainer = document.getElementById(platform + 'RowsList');
+                document.getElementById(listId).style.display = 'block';
+                if (listContainer) {
+                    listContainer.innerHTML = '';
+                    subProducts[platform].forEach(item => {
+                        const row = document.createElement('div');
+                        row.style = "background: #111622; padding: 16px; margin-bottom: 10px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid #1c2536; color: white; font-weight: 500; font-size: 14px;";
+                        row.innerHTML = `<span>${item.name}</span> <span style="color: #4b5563;">→</span>`;
+                        row.onclick = function() { openModal(item.name, item.price, item.img, true, item.min); };
+                        listContainer.appendChild(row);
+                    });
+                }
             }
         }
-        const tgServices = [
-            { name: "👥 Подписчики", type: "duration", menuId: "tgDurationMenu_subscribers" },
-            { name: "🔥 Реакции", type: "duration", menuId: "tgDurationMenu_reactions" },
-            { name: "🚀 Бусты", type: "duration", menuId: "tgDurationMenu_boosts" }
-        ];
-        function showTgRows() {
-            tgMenuStep = 'rows'; document.getElementById('tgWelcomeCard').style.display = 'none'; document.getElementById('tgServicesRows').style.display = 'block'; document.getElementById('menuBackButton').style.display = 'inline-block';
-            const listContainer = document.getElementById('tgRowsList');
-            if (listContainer) {
-                listContainer.innerHTML = '';
-                tgServices.forEach(service => {
+
+        function showTgInnerFolder(folderId) {
+            currentStep = 'tg_inner_' + folderId;
+            document.getElementById('tgServicesRows').style.display = 'none';
+            const innerContainer = document.getElementById('tgInnerList');
+            document.getElementById('tgInnerMenuRows').style.display = 'block';
+            
+            if (innerContainer) {
+                innerContainer.innerHTML = '';
+                const items = [...subProducts[folderId]].sort((a,b) => (b.isDefault ? 1 : 0) - (a.isDefault ? 1 : 0));
+                items.forEach(item => {
                     const row = document.createElement('div');
                     row.style = "background: #111622; padding: 16px; margin-bottom: 10px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid #1c2536; color: white; font-weight: 500; font-size: 14px;";
-                    row.innerHTML = `<span>${service.name}</span> <span style="color: #4b5563;">→</span>`;
-                    row.onclick = function() { showTgDuration(service.menuId); }; listContainer.appendChild(row);
+                    row.innerHTML = `<span>${item.name} ${item.isDefault ? '<span style="color:#007bff; font-size:11px;">[Рекомендуем]</span>' : ''}</span> <span style="color: #4b5563;">→</span>`;
+                    row.onclick = function() { openModal(item.name, item.price, item.img, true, item.min, item.hasEmojiSelect); };
+                    innerContainer.appendChild(row);
                 });
             }
         }
-        function showTgDuration(menuId) { tgMenuStep = menuId; document.getElementById('tgServicesRows').style.display = 'none'; document.getElementById(menuId).style.display = 'block'; }
+
         function menuGoBack() {
-            if (tgMenuStep === 'rows') { resetTgMenu(); } else {
-                document.getElementById(tgMenuStep).style.display = 'none'; document.getElementById('tgServicesRows').style.display = 'block'; tgMenuStep = 'rows';
+            if (currentStep === 'platform_rows') {
+                resetSocialMenu();
+            } else if (currentStep.startsWith('tg_inner_')) {
+                document.getElementById('tgInnerMenuRows').style.display = 'none';
+                document.getElementById('tgServicesRows').style.display = 'block';
+                currentStep = 'platform_rows';
             }
         }
-        function resetTgMenu() {
-            tgMenuStep = 'welcome'; document.getElementById('menuBackButton').style.display = 'none'; document.getElementById('tgWelcomeCard').style.display = 'block'; document.getElementById('tgServicesRows').style.display = 'none';
-            if(document.getElementById('tgDurationMenu_boosts')) document.getElementById('tgDurationMenu_boosts').style.display = 'none';
-            if(document.getElementById('tgDurationMenu_subscribers')) document.getElementById('tgDurationMenu_subscribers').style.display = 'none';
-            if(document.getElementById('tgDurationMenu_reactions')) document.getElementById('tgDurationMenu_reactions').style.display = 'none';
+
+        function resetSocialMenu() {
+            currentStep = 'welcome'; activePlatform = '';
+            document.getElementById('menuBackButton').style.display = 'none';
+            document.getElementById('socialWelcomeCard').style.display = 'flex';
+            ['tgServicesRows', 'tgInnerMenuRows', 'tiktokServicesRows', 'vkServicesRows'].forEach(id => {
+                const el = document.getElementById(id); if(el) el.style.display = 'none';
+            });
         }
-        function openModal(title, price, oldPrice, imgUrl, isRateBased = false) {
-            currentPrice = parseFloat(price); isCountable = isRateBased;
-            const modalTitle = document.getElementById('modalTitle'); const modalImg = document.getElementById('modalImg');
-            const qtyBlock = document.getElementById('quantityBlock'); const priceLabel = document.getElementById('priceLabel'); const qtyInput = document.getElementById('itemQuantity');
-            const step1 = document.getElementById('step1'); const step2 = document.getElementById('step2'); const orderModal = document.getElementById('orderModal');
-            if (modalTitle) modalTitle.innerText = title;
-            if (imgUrl && imgUrl !== '') { if (modalImg) { modalImg.src = imgUrl; modalImg.style.display = 'block'; } } else { if (modalImg) modalImg.style.display = 'none'; }
-            if (isCountable && qtyBlock && priceLabel && qtyInput) {
-                qtyBlock.style.display = 'block'; priceLabel.innerText = "Итого к оплате:"; qtyInput.value = "100"; calculateTotal();
+
+        function openModal(title, price, imgUrl, isRateBased = false, minimum = 1, showEmoji = false) {
+            currentPrice = parseFloat(price); isCountable = isRateBased; minLimit = minimum;
+            const qtyInput = document.getElementById('itemQuantity');
+            const emojiSel = document.getElementById('emojiSelector');
+            
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalImg').src = imgUrl || '';
+            document.getElementById('modalImg').style.display = imgUrl ? 'block' : 'none';
+            
+            if (showEmoji) emojiSel.style.display = 'block';
+            else emojiSel.style.display = 'none';
+            
+            if (isCountable) {
+                document.getElementById('quantityBlock').style.display = 'block';
+                document.getElementById('priceLabel').innerText = "Итого к оплате:";
+                qtyInput.value = minLimit;
+                calculateTotal();
             } else {
-                if (qtyBlock) qtyBlock.style.display = 'none'; if (priceLabel) priceLabel.innerText = "Цена:";
-                const modalPrice = document.getElementById('modalPrice'); if (modalPrice) modalPrice.innerText = currentPrice + ' ₽';
+                document.getElementById('quantityBlock').style.display = 'none';
+                document.getElementById('priceLabel').innerText = "Цена:";
+                            document.getElementById('modalPrice').innerText = currentPrice + ' ₽';
+                document.getElementById('nextStepBtn').disabled = false;
+                document.getElementById('errorMsg').style.display = 'none';
             }
-            if (step1) step1.style.display = 'block'; if (step2) step2.style.display = 'none'; if (orderModal) orderModal.style.display = 'flex';
+            document.getElementById('step1').style.display = 'block';
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('orderModal').style.display = 'flex';
         }
+
         function calculateTotal() {
             if (!isCountable) return;
-            const qtyInput = document.getElementById('itemQuantity'); const modalPrice = document.getElementById('modalPrice'); if (!qtyInput || !modalPrice) return;
-            let count = parseInt(qtyInput.value); if (isNaN(count) || count < 1) count = 0;
-            let total = count * currentPrice; modalPrice.innerText = total.toFixed(total % 1 === 0 ? 0 : 2) + ' ₽';
-        }
-        function goToStep2() {
-            const payAmount = document.getElementById('payAmount'); const modalPrice = document.getElementById('modalPrice');
-            const modalImg = document.getElementById('modalImg'); const modalImgStep2 = document.getElementById('modalImgStep2');
-            const step1 = document.getElementById('step1'); const step2 = document.getElementById('step2');
-            if (payAmount && modalPrice) payAmount.innerText = modalPrice.innerText;
-            if (modalImg && modalImgStep2) {
-                if (modalImg.style.display === 'block' && modalImg.src) { modalImgStep2.src = modalImg.src; modalImgStep2.style.display = 'block'; } else { modalImgStep2.style.display = 'none'; }
+            const qtyInput = document.getElementById('itemQuantity');
+            let count = parseInt(qtyInput.value);
+            if (isNaN(count)) count = 0;
+            
+            const errEl = document.getElementById('errorMsg');
+            const btnEl = document.getElementById('nextStepBtn');
+            
+            if (count < minLimit) {
+                errEl.innerText = `Минимальное количество для заказа: ${minLimit} шт.`;
+                errEl.style.display = 'block';
+                btnEl.disabled = true;
+            } else {
+                errEl.style.display = 'none';
+                btnEl.disabled = false;
             }
-            if (step1) step1.style.display = 'none'; if (step2) step2.style.display = 'block';
+            let total = count * currentPrice;
+            document.getElementById('modalPrice').innerText = (total >= 1 ? total.toFixed(2) : total.toFixed(4)) + ' ₽';
         }
-        function closeModal() { const orderModal = document.getElementById('orderModal'); if (orderModal) orderModal.style.display = 'none'; }
+
+        function goToStep2() {
+            let title = document.getElementById('modalTitle').innerText;
+            if (document.getElementById('emojiSelector').style.display === 'block') {
+                title += ` (Эмодзи: ${document.getElementById('emojiSelector').value})`;
+            }
+            document.getElementById('payAmount').innerText = document.getElementById('modalPrice').innerText;
+            const srcImg = document.getElementById('modalImg');
+            if (srcImg.style.display === 'block') {
+                document.getElementById('modalImgStep2').src = srcImg.src;
+                document.getElementById('modalImgStep2').style.display = 'block';
+            } else document.getElementById('modalImgStep2').style.display = 'none';
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').style.display = 'block';
+        }
+
+        function closeModal() { document.getElementById('orderModal').style.display = 'none'; }
+        
         function copyCard() {
-            navigator.clipboard.writeText(cardNumber); const toast = document.getElementById('toast');
-            if (toast) { toast.style.display = 'block'; setTimeout(() => { toast.style.display = 'none'; }, 1500); }
+            navigator.clipboard.writeText(cardNumber);
+            const toast = document.getElementById('toast'); toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 1500);
         }
-        if (typeof window.Telegram !== 'undefined' && window.Telegram.WebApp) { const tg = window.Telegram.WebApp; tg.ready(); tg.expand(); }
+        
+        if (typeof window.Telegram !== 'undefined' && window.Telegram.WebApp) { 
+            window.Telegram.WebApp.ready(); 
+            window.Telegram.WebApp.expand(); 
+        }
     </script>
 </body>
 </html>
