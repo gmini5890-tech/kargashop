@@ -48,18 +48,30 @@
         <div class="tab" onclick="filterCategory('social', this)">Соцсети</div>
         <div class="tab" onclick="filterCategory('ai', this)">ИИ</div>
         <div class="tab" onclick="filterCategory('promo', this)">Продвижение</div>
-        <div class="tab" onclick="filterCategory('soft', this)">Софт</div>
+        <div class="tab" onclick="filterCategory('soft', this)">Ключи</div>
     </div>
         <!-- Главная страница -->
-    <div id="mainPageContainer" style="display: block; max-width: 600px; margin: 0 auto; padding: 15px; text-align: center;">
-        <div style="background: #111622; border: 1px solid #1c2536; padding: 40px 20px; border-radius: 15px;">
-            <h2 style="margin: 0 0 10px 0; color: #007bff;">Добро пожаловать в GayerShop!</h2>
-            <p style="margin: 0; color: #9ca3af; font-size: 14px; line-height: 1.6;">
-                Здесь будет текст вашего заказчика.<br>Скажите его мне, и я заменю этот блок на красивое описание!
-            </p>
-        </div>
-    </div>
+        <div id="mainPageContainer" style="display: block; max-width: 600px; margin: 0 auto; padding: 15px; text-align: center;">
+            <div style="background: #111622; border: 1px solid #1c2536; padding: 30px 20px; border-radius: 15px;">
+                <h2 style="margin: 0 0 12px 0; color: #007bff; font-size: 22px; font-weight: 800;">Добро пожаловать в GayerShop! 🚀</h2>
+                <p style="margin: 0 0 16px 0; color: #e5e7eb; font-size: 14px; line-height: 1.6; text-align: left;">
+                    Ваш надёжный проводник в мире цифровых услуг и эффективного продвижения. Мы объединили всё самое необходимое в одном удобном WebApp-приложении, чтобы вы могли развивать свои проекты в пару кликов!
+                </p>
 
+                <div style="background: #182032; border: 1px solid #1c2536; padding: 14px; border-radius: 12px; margin-bottom: 16px; text-align: left;">
+                    <h4 style="margin: 0 0 8px 0; color: #10b981; font-size: 14px; font-weight: 700;">🌟 Наши главные преимущества:</h4>
+                    <ul style="margin: 0; padding-left: 20px; color: #9ca3af; font-size: 13px; line-height: 1.5;">
+                        <li style="margin-bottom: 6px;"><strong style="color: #fff;">Удобный калькулятор:</strong> Никаких фиксированных пакетов! Вводите нужное количество и платите строго за результат.</li>
+                        <li style="margin-bottom: 6px;"><strong style="color: #fff;">Безопасные заказы:</strong> Оформление происходит напрямую через администратора без ручного ввода банковских карт на сайте.</li>
+                        <li><strong style="color: #fff;">Широкий ассортимент:</strong> От продвижения во всех популярных соцсетях до подписок на искусственный интеллект.</li>
+                    </ul>
+                </div>
+
+                <p style="margin: 0; color: #9ca3af; font-size: 13px; font-weight: 500; line-height: 1.4;">
+                    👉 Переключайтесь между вкладками меню выше, выбирайте интересующие услуги и отправляйте мгновенный чек для оформления заказа. Начните продвижение прямо сейчас!
+                </p>
+            </div>
+        </div>
     <!-- Вкладка Соцсети -->
     <div id="socialStepContainer" style="display: none; max-width: 600px; margin: 0 auto; padding: 15px;">
         <button id="menuBackButton" onclick="menuGoBack()" style="display: none; background: #374151; color: white; border: none; padding: 8px 15px; border-radius: 8px; font-size: 13px; margin-bottom: 15px; cursor: pointer;">← Назад</button>
@@ -172,11 +184,10 @@
                 <img id="modalImgStep2" src="" alt="Preview" style="width: 100%; border-radius: 12px; margin-bottom: 16px; aspect-ratio: 16/11; object-fit: cover; border: 1px solid #1c2536; display: none;">
                 <h4 style="margin: 0 0 8px 0; font-size: 18px; color: #fff;">Оплата заказа</h4>
                 <div style="font-size: 26px; font-weight: 800; margin-bottom: 16px; color: #10b981;" id="payAmount">0 ₽</div>
-                <a href="https://t.me/Smeshnoy_Ny_Tema" target="_blank" class="btn btn-pay">Оформить заказ у админа</a>
+                 <a href="https://t.me/Smeshnoy_Ny_Tema" target="_blank" class="btn btn-pay">Оформить заказ у админа</a>
             </div>
         </div>
     </div>
-    <div id="toast" class="toast">Номер карты скопирован!</div>
 
     <script type="text/javascript">
                 let currentPrice = 0; let isCountable = false; let minLimit = 1; let activePlatform = ''; let currentStep = 'welcome'; const cardNumber = "4276000000000000"; 
