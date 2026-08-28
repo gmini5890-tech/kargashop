@@ -158,6 +158,27 @@
             font-size: 13px; 
         }
 
+                /* Модальное окно финального чека */
+        .checkout-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 110; padding: 16px; backdrop-filter: blur(10px); }
+        .checkout-content { background: #18181b; width: 100%; max-width: 380px; padding: 24px; border-radius: 24px; border: 1px solid #27272a; position: relative; display: flex; flex-direction: column; }
+        
+        /* Текстовое поле с готовым чеком, откуда удобно копировать */
+        .checkout-textarea { 
+            width: 100%; 
+            height: 180px; 
+            background: #000000; 
+            border: 1px solid #27272a; 
+            border-radius: 12px; 
+            color: #10b981; /* Красивый зеленый хакерский/цифровой цвет */
+            font-size: 11px; 
+            padding: 12px; 
+            margin: 14px 0; 
+            resize: none; 
+            white-space: pre-wrap;
+            overflow-y: auto;
+        }
+
+
 
         /* Нижний таб-бар Telegram Mini App */
         .tab-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 420px; background: #18181b; border-top: 1px solid #27272a; display: flex; justify-content: space-around; padding: 12px 0 16px 0; z-index: 90; }
@@ -250,6 +271,27 @@
 
 
     </div> <!-- Конец app-container -->
+        <!-- Новое окно подтверждения заказа и ручного копирования -->
+    <div id="checkoutReceiptModal" class="checkout-modal">
+        <div class="checkout-content">
+            <button onclick="document.getElementById('checkoutReceiptModal').style.display='none'" style="position: absolute; top: 12px; right: 16px; background: none; border: none; color: #a1a1aa; font-size: 22px; cursor: pointer;">&times;</button>
+            <h4 style="margin: 0; font-size: 14px; color: #ffffff; text-align: center;">🛒 Ваш заказ сформирован!</h4>
+            <p style="font-size: 10px; color: #a1a1aa; margin-top: 6px; line-height: 1.4; text-align: center;">Нажмите на кнопку ниже, чтобы скопировать текст, а затем перейдите к администратору для оплаты.</p>
+            
+            <!-- Сюда скрипт вставит весь текст заказа -->
+            <textarea id="checkoutReceiptTextarea" class="checkout-textarea" readonly></textarea>
+            
+            <!-- Кнопка копирования -->
+            <button id="btnCopyReceipt" class="btn" style="background: #10b981; margin-top: 0;" onclick="copyReceiptTextToClipboard()">
+                <span>📋 Скопировать текст заказа</span>
+            </button>
+            
+            <!-- Кнопка перехода к админу -->
+            <button class="btn" style="background: #2563eb; margin-top: 10px;" onclick="goToAdminChatLink()">
+                <span>💬 Перейти к @Smeshnoy_Ny_Tema</span>
+            </button>
+        </div>
+    </div>
 
     <div class="tab-bar">
         <div class="nav-item active" onclick="navigateTabBar('welcome', this)"><span class="nav-icon">🏠</span><span>Главная</span></div>
@@ -518,42 +560,77 @@
         function removeCartItemEntirely(index) { cartState.splice(index, 1); saveCartToLocalStorage(); }
         function clearEntireCart() { cartState = []; saveCartToLocalStorage(); }
 
-        // Обновленная безотказная логика: Копирование чека в буфер обмена + мгновенный редирект к админу
-        // Обновленная и безопасная логика: Копирование чека + гарантированный редирект через нативный протокол
+         // Нативный метод Telegram для безотказного вывода чека
+                // Безотказный метод: быстрое копирование чека без длинных ссылок и моментальный переход
+         // Шаг 1: Собираем заказ и показываем красивое окно с текстом
         function processCheckoutSubmit() {
             if (cartState.length === 0) return;
+            
             let username = tgApp?.initDataUnsafe?.user?.username ? `@${tgApp.initDataUnsafe.user.username}` : 'Покупатель';
             let userId = tgApp?.initDataUnsafe?.user?.id || 'Не определен';
-            let checkTextMessage = `📦 **Новый заказ от ${username}**\n\n`; let finalSum = 0;
-
+            
+            // Собираем красивый и четкий текст заказа
+            let checkTextMessage = `📦 НОВЫЙ ЗАКАЗ\n`;
+            checkTextMessage += `👤 Клиент: ${username}\n`;
+            checkTextMessage += `🆔 ID: ${userId}\n`;
+            checkTextMessage += `-------------------------\n\n`;
+            
+            let finalSum = 0;
             cartState.forEach(item => {
-                let cost = item.qty * item.price; finalSum += cost;
-                let titleString = item.name; if (item.emoji) titleString += ` (Эмодзи: ${item.emoji})`;
-                checkTextMessage += `• **${titleString}**\n  Количество: ${item.qty} шт. — ${(cost >= 1 ? cost.toFixed(2) : cost.toFixed(4))} ₽\n\n`;
+                let cost = item.qty * item.price; 
+                finalSum += cost;
+                let titleString = item.name; 
+                if (item.emoji) titleString += ` (${item.emoji})`;
+                checkTextMessage += `• ${titleString}\n  Кол-во: ${item.qty} шт. — ${(cost >= 1 ? cost.toFixed(2) : cost.toFixed(4))} ₽\n\n`;
             });
-            checkTextMessage += `💰 **Итого к оплате: ${(finalSum >= 1 ? finalSum.toFixed(2) : finalSum.toFixed(4))} ₽**\n🆔 ID пользователя: \`${userId}\`\n`;
+            
+            checkTextMessage += `-------------------------\n`;
+            checkTextMessage += `💰 ИТОГО К ОПЛАТЕ: ${(finalSum >= 1 ? finalSum.toFixed(2) : finalSum.toFixed(4))} ₽`;
 
-            // Принудительное копирование текста заказа в буфер обмена устройства
-            const tempTextArea = document.createElement("textarea");
-            tempTextArea.value = checkTextMessage;
-            document.body.appendChild(tempTextArea);
-            tempTextArea.select();
-            document.execCommand("copy");
-            document.body.removeChild(tempTextArea);
+            // Закидываем текст в текстовую область нашей новой плашки
+            const textarea = document.getElementById('checkoutReceiptTextarea');
+            if (textarea) {
+                textarea.value = checkTextMessage;
+            }
+            
+            // Сбрасываем текст кнопки копирования к исходному значению
+            document.getElementById('btnCopyReceipt').innerHTML = '<span>📋 Скопировать текст заказа</span>';
+            
+            // Показываем плашку пользователю на экране
+            document.getElementById('checkoutReceiptModal').style.display = 'flex';
+            
+            if (tgApp && tgApp.HapticFeedback) tgApp.HapticFeedback.impactOccurred("medium");
+        }
 
-            // ИСПРАВЛЕНИЕ: Прямой редирект по клику на кнопку внутри нативного окна Telegram Alert
-            if (tgApp && tgApp.showAlert) {
-                tgApp.showAlert("🛒 Текст заказа автоматически скопирован в буфер обмена! Нажмите 'ОК' для перехода в чат к администратору, зажмите поле ввода и выберите 'Вставить'.", () => {
-                    // Используем универсальную веб-ссылку t.me, которая внутри Telegram всегда открывает нативный чат
-                    window.open("https://t.me/Smeshnoy_Ny_Tema", "_blank");
-                    setTimeout(() => { tgApp.close(); }, 300);
-                });
-            } else {
-                alert("Заказ скопирован в буфер обмена! Переходим в Telegram к администратору.");
-                window.open("https://t.me/Smeshnoy_Ny_Tema", "_blank");
+        // Шаг 2: Безотказное нативное копирование из текстового поля по кнопке
+        function copyReceiptTextToClipboard() {
+            const textarea = document.getElementById('checkoutReceiptTextarea');
+            if (!textarea) return;
+            
+            textarea.select();
+            textarea.setSelectionRange(0, 99999); // Для мобильных устройств
+            
+            try {
+                document.execCommand("copy");
+                // Анимируем кнопку, показывая, что текст скопирован успешно
+                document.getElementById('btnCopyReceipt').innerHTML = '<span>✅ Текст скопирован!</span>';
+                if (tgApp && tgApp.HapticFeedback) tgApp.HapticFeedback.notificationOccurred("success");
+            } catch (err) {
+                alert("Не удалось скопировать автоматически. Пожалуйста, зажмите текст внутри поля вручную и скопируйте его.");
             }
         }
+
+        // Шаг 3: Переход в диалог с админом
+        function goToAdminChatLink() {
+            let adminLink = "https://t.me/Smeshnoy_Ny_Tema";
+            
+            if (tgApp && typeof tgApp.openTelegramLink === "function") {
+                tgApp.openTelegramLink(adminLink);
+            } else {
+                window.open(adminLink, "_blank");
+            }
+        }
+
     </script>
 </body>
 </html>
-
