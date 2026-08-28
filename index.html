@@ -4,237 +4,342 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GayerShop</title>
+    <!-- Подключение шрифта Unbounded с поддержкой максимальной жирности Extra-Bold (800) -->
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://googleapis.com/css2?family=Unbounded:wght@800&display=swap" rel="stylesheet">
     <script src="https://telegram.org"></script>
     <style>
-        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #080b10; color: #fff; margin: 0; padding: 12px; user-select: none; }
-        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding: 4px; }
-        .logo { font-size: 20px; font-weight: 800; letter-spacing: 0.5px; background: linear-gradient(45deg, #00ffff, #007bff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .badge-premium { background: rgba(0, 123, 255, 0.15); border: 1px solid rgba(0, 123, 255, 0.3); color: #007bff; font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 20px; }
-        .categories { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
-        .categories::-webkit-scrollbar { display: none; }
-        .tab { background: #111622; border: 1px solid #1c2536; color: #9ca3af; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s ease; }
-        .tab.active { background: #007bff; border-color: #007bff; color: #fff; box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3); }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding-bottom: 40px; }
-        .card { background: #111622; border-radius: 14px; overflow: hidden; border: 1px solid #1c2536; cursor: pointer; display: flex; flex-direction: column; position: relative; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-        .card:active { transform: scale(0.96); }
-        .card img { width: 100%; height: auto; display: block; aspect-ratio: 16/11; object-fit: cover; border-bottom: 1px solid #1c2536; }
-        .card-info { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .title { font-size: 12px; font-weight: 600; line-height: 1.4; color: #e5e7eb; margin: 0 0 10px 0; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; height: 50px; }
-        .price-row { display: flex; align-items: center; gap: 8px; margin-top: auto; }
-        .price { color: #fff; font-weight: 700; font-size: 16px; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(4, 6, 10, 0.85); justify-content: center; align-items: center; z-index: 100; padding: 16px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-        .modal-content { background: #111622; width: 100%; max-width: 350px; padding: 24px; border-radius: 20px; border: 1px solid #242f47; box-shadow: 0 20px 40px rgba(0,0,0,0.7); text-align: center; position: relative; animation: slideUp 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .modal img { width: 100%; border-radius: 12px; margin-bottom: 16px; aspect-ratio: 16/11; object-fit: cover; border: 1px solid #1c2536; }
-        .btn { display: flex; align-items: center; justify-content: center; width: 100%; background: #007bff; color: white; padding: 14px; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 14px; font-size: 14px; text-decoration: none; transition: all 0.15s ease; }
-        .btn:disabled { background: #242f47 !important; color: #4b5563 !important; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
-        .btn:active:not(:disabled) { transform: scale(0.97); }
-        .btn-pay { background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 12px rgba(16,185,129,0.3); }
-        .copy-box { background: #182032; padding: 14px; border-radius: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 15px; margin: 14px 0; border: 1px dashed #3b4f74; cursor: pointer; color: #38bdf8; font-weight: 700; transition: background 0.2s ease; }
-        .toast { display: none; position: fixed; top: 24px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; padding: 10px 20px; border-radius: 30px; font-size: 13px; font-weight: 700; z-index: 200; box-shadow: 0 4px 12px rgba(16,185,129,0.4); }
-        .error-msg { color: #ef4444; font-size: 12px; margin-top: 6px; display: none; font-weight: 600; text-align: left; line-height: 1.3; }
-        .select-emoji { width: 100%; padding: 12px; background: #080b10; border: 1px solid #1c2536; border-radius: 10px; color: white; font-size: 15px; font-weight: 600; margin-top: 8px; display: none; }
+        /* Полный сброс отступов */
+        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        
+        /* Принудительное наложение шрифта Unbounded Extra-Bold на ВЕСЬ сайт */
+        body, input, select, button, div, span, h2, h3, h4, p { 
+            font-family: 'Unbounded', sans-serif !important; 
+            font-weight: 800 !important;
+        }
+
+        body { 
+            background-color: #000000; 
+            color: #ffffff; 
+            user-select: none;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        /* Мобильный контейнер Telegram Mini App */
+        .app-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 16px 16px 110px 16px;
+            display: flex;
+            flex-direction: column;
+        }
+        /* Шапка с логотипом строго по центру (Исправление по фото 1) */
+        .header { display: flex; align-items: center; justify-content: center; margin-bottom: 24px; padding: 4px 0; width: 100%; }
+        .logo { 
+            font-size: 18px; 
+            letter-spacing: -0.5px; 
+            color: #ffffff; 
+            text-transform: none;
+        }
+        
+        /* Сетка для двухколоночного вывода товаров */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        /* Крупные нативные плитки меню категорий по образцу RAPTOR */
+        .category-row-card { 
+            background: #18181b; 
+            border-radius: 16px; 
+            border: 1px solid #27272a; 
+            padding: 20px; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            gap: 16px; 
+            transition: background 0.15s ease; 
+            margin-bottom: 12px; 
+        }
+        .category-row-card:active { background: #27272a; }
+        
+        /* Иконки категорий (Исправление по фото 2) */
+        .category-row-card img { 
+            width: 44px; 
+            height: 44px; 
+            object-fit: contain; 
+            border: none; 
+            border-radius: 0;
+        }
+        
+        .category-row-card h3 { font-size: 15px; color: #ffffff; letter-spacing: -0.5px; }
+        .category-row-card p { font-size: 10px; color: #71717a; margin-top: 4px; line-height: 1.3; }
+        /* Сетка конечных товаров в каталоге */
+        .card { background: #18181b; border-radius: 16px; overflow: hidden; border: 1px solid #27272a; cursor: pointer; display: flex; flex-direction: column; transition: transform 0.15s ease; }
+        .card:active { transform: scale(0.97); }
+        .card img { width: 100%; height: auto; display: block; aspect-ratio: 16/11; object-fit: cover; border-bottom: 1px solid #27272a; }
+        .card-info { padding: 14px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; }
+        .title { font-size: 11px; line-height: 1.4; color: #f4f4f5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 32px; letter-spacing: -0.5px; }
+        .price-row { display: flex; align-items: center; justify-content: space-between; }
+        .price { color: #ffffff; font-size: 14px; letter-spacing: -0.5px; }
+        .add-badge { background: #2563eb; color: #ffffff; font-size: 16px; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+        /* Всплывающие модальные окна */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 100; padding: 16px; backdrop-filter: blur(10px); }
+        .modal-content { background: #18181b; width: 100%; max-width: 360px; padding: 24px; border-radius: 24px; border: 1px solid #27272a; text-align: center; position: relative; }
+        .input-qty { width: 100%; padding: 14px; background: #000000; border: 1px solid #27272a; border-radius: 12px; color: #ffffff; font-size: 15px; text-align: center; margin-top: 6px; }
+        .select-emoji { width: 100%; padding: 14px; background: #000000; border: 1px solid #27272a; border-radius: 12px; color: #ffffff; font-size: 14px; margin-top: 10px; display: none; }
+        
+        /* Главная кнопка во всю ширину экрана в стиле RAPTOR */
+        .btn { display: flex; align-items: center; justify-content: center; width: 100%; background: #2563eb; color: #ffffff; padding: 16px; border: none; border-radius: 14px; cursor: pointer; font-size: 14px; margin-top: 16px; gap: 8px; }
+        .btn:disabled { background: #18181b !important; color: #71717a !important; border: 1px solid #27272a !important; cursor: not-allowed; }
+                /* Специфичные стили КОРЗИНЫ по макету RAPTOR */
+        .cart-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-top: 8px; }
+        .cart-title-row h3 { font-size: 22px; color: #ffffff; letter-spacing: -0.5px; }
+        .cart-clear-btn { font-size: 12px; color: #71717a; cursor: pointer; }
+        
+        .cart-item { background: #18181b; border: 1px solid #27272a; border-radius: 20px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 16px; position: relative; }
+        .cart-item-img { width: 52px; height: 56px; border-radius: 12px; border: 1px solid #27272a; object-fit: cover; }
+        .cart-item-details { flex-grow: 1; display: flex; flex-direction: column; gap: 6px; }
+        .cart-item-title { font-size: 12px; color: #ffffff; padding-right: 35px; line-height: 1.4; letter-spacing: -0.5px; }
+        .cart-item-formula { font-size: 12px; color: #2563eb; letter-spacing: -0.5px; }
+        
+        /* Исправленный блок калькулятора с жестким выравниванием цифр по центру */
+        .cart-control-block { display: flex; align-items: center; justify-content: center; background: #000000; border: 1px solid #27272a; border-radius: 10px; padding: 2px 6px; }
+        .cart-btn-math { background: none; border: none; color: #a1a1aa; font-size: 16px; width: 26px; height: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        
+        /* Фикс: убираем стрелочки инпута, центрируем текст и расширяем поле под Extra-Bold */
+        .cart-input-value { 
+            width: 44px; 
+            background: none; 
+            border: none; 
+            color: #ffffff; 
+            text-align: center !important; 
+            font-size: 13px; 
+            padding: 0;
+            appearance: textfield;
+            -moz-appearance: textfield;
+        }
+        .cart-input-value::-webkit-outer-spin-button,
+        .cart-input-value::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        /* Нативная КРАСНАЯ кнопка удаления в рамке по образцу RAPTOR */
+        .cart-item-delete { 
+            position: absolute; 
+            top: 16px; 
+            right: 16px; 
+            color: #ef4444; 
+            font-size: 14px; 
+            cursor: pointer; 
+            background: rgba(239, 68, 68, 0.15); 
+            border: 1px solid rgba(239, 68, 68, 0.25); 
+            width: 24px;
+            height: 24px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+        }
+        .cart-item-delete:active {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .cart-summary-box { background: #18181b; border: 1px solid #27272a; border-radius: 20px; padding: 20px; margin-top: 24px; display: flex; flex-direction: column; gap: 14px; }
+        .summary-row { display: flex; justify-content: space-between; font-size: 13px; color: #a1a1aa; }
+        .summary-total-price { font-size: 16px; color: #2563eb; letter-spacing: -0.5px; }
+        .btn-wallet-icon { background: rgba(255,255,255,0.15); width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+
+        /* Нижний таб-бар Telegram Mini App */
+        .tab-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 420px; background: #18181b; border-top: 1px solid #27272a; display: flex; justify-content: space-around; padding: 12px 0 16px 0; z-index: 90; }
+        .nav-item { color: #71717a; font-size: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; width: 33%; text-align: center; }
+        .nav-item.active { color: #2563eb; }
+        .nav-icon { font-size: 18px; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="logo">GayerShop</div>
-        <div class="badge-premium">BEST SELLER</div>
-    </div>
-    
-    <div class="categories">
-        <div class="tab active" onclick="filterCategory('main', this)">Главная</div>
-        <div class="tab" onclick="filterCategory('social', this)">Соцсети</div>
-        <div class="tab" onclick="filterCategory('ai', this)">ИИ</div>
-        <div class="tab" onclick="filterCategory('promo', this)">Продвижение</div>
-        <div class="tab" onclick="filterCategory('soft', this)">Ключи</div>
-    </div>
-        <!-- Главная страница -->
-        <div id="mainPageContainer" style="display: block; max-width: 600px; margin: 0 auto; padding: 15px; text-align: center;">
-            <div style="background: #111622; border: 1px solid #1c2536; padding: 30px 20px; border-radius: 15px;">
-                <h2 style="margin: 0 0 12px 0; color: #007bff; font-size: 22px; font-weight: 800;">Добро пожаловать в GayerShop! 🚀</h2>
-                <p style="margin: 0 0 16px 0; color: #e5e7eb; font-size: 14px; line-height: 1.6; text-align: left;">
+    <div class="app-container">
+        <!-- Нативная шапка приложения без Best Seller -->
+        <div class="header" id="appHeaderBlock">
+            <div class="logo">GayerShop</div>
+        </div>
+
+        <!-- ЭКРАН 1: ДОБРО ПОЖАЛОВАТЬ (ГЛАВНАЯ) -->
+        <div id="screen_welcome" style="display: block;">
+            <div style="background: #18181b; border: 1px solid #27272a; padding: 30px 20px; border-radius: 16px; text-align: center;">
+                <h2 style="font-size: 16px; color: #2563eb; letter-spacing: -0.5px;">Добро пожаловать в GayerShop! 🚀</h2>
+                <p style="margin: 16px 0; color: #e4e4e7; font-size: 11px; line-height: 1.6; text-align: left;">
                     Ваш надёжный проводник в мире цифровых услуг и эффективного продвижения. Мы объединили всё самое необходимое в одном удобном WebApp-приложении, чтобы вы могли развивать свои проекты в пару кликов!
                 </p>
-
-                <div style="background: #182032; border: 1px solid #1c2536; padding: 14px; border-radius: 12px; margin-bottom: 16px; text-align: left;">
-                    <h4 style="margin: 0 0 8px 0; color: #10b981; font-size: 14px; font-weight: 700;">🌟 Наши главные преимущества:</h4>
-                    <ul style="margin: 0; padding-left: 20px; color: #9ca3af; font-size: 13px; line-height: 1.5;">
-                        <li style="margin-bottom: 6px;"><strong style="color: #fff;">Удобный калькулятор:</strong> Никаких фиксированных пакетов! Вводите нужное количество и платите строго за результат.</li>
-                        <li style="margin-bottom: 6px;"><strong style="color: #fff;">Безопасные заказы:</strong> Оформление происходит напрямую через администратора без ручного ввода банковских карт на сайте.</li>
-                        <li><strong style="color: #fff;">Широкий ассортимент:</strong> От продвижения во всех популярных соцсетях до подписок на искусственный интеллект.</li>
+                <div style="background: #000000; border: 1px solid #27272a; padding: 14px; border-radius: 12px; margin-bottom: 18px; text-align: left;">
+                    <h4 style="margin: 0 0 8px 0; color: #10b981; font-size: 12px;">🌟 Наши главные преимущества:</h4>
+                    <ul style="margin: 0; padding-left: 14px; color: #a1a1aa; font-size: 11px; line-height: 1.6; list-style-type: square;">
+                        <li style="margin-bottom: 6px;"><strong style="color: #fff;">Удобный инпут:</strong> Меняйте точное количество товаров и услуг текстом или кнопками прямо в корзине.</li>
+                        <li style="margin-bottom: 6px;"><strong style="color: #fff;">Прямой чат-чек:</strong> Полная спецификация заказа мгновенно перенаправляется администратору.</li>
                     </ul>
                 </div>
-
-                <p style="margin: 0; color: #9ca3af; font-size: 13px; font-weight: 500; line-height: 1.4;">
-                    👉 Переключайтесь между вкладками меню выше, выбирайте интересующие услуги и отправляйте мгновенный чек для оформления заказа. Начните продвижение прямо сейчас!
-                </p>
+                <button class="btn" onclick="document.getElementById('nav_catalog_btn').click()"><span>Перейти в каталог →</span></button>
             </div>
         </div>
-    <!-- Вкладка Соцсети -->
-    <div id="socialStepContainer" style="display: none; max-width: 600px; margin: 0 auto; padding: 15px;">
-        <button id="menuBackButton" onclick="menuGoBack()" style="display: none; background: #374151; color: white; border: none; padding: 8px 15px; border-radius: 8px; font-size: 13px; margin-bottom: 15px; cursor: pointer;">← Назад</button>
-        
-        <div id="socialWelcomeCard" style="display: flex; flex-direction: column; gap: 16px;">
-            <!-- Плитка Telegram -->
-            <div style="background: #111622; border: 1px solid #1c2536; padding: 25px; border-radius: 15px; text-align: center; cursor: pointer;" onclick="showPlatformMenu('tg')">
-                <img src="telegram_logo.png" alt="Telegram" style="width: 100px; height: 100px; margin-bottom: 10px; object-fit: contain;">
-                <h3 style="margin: 0; color: white; font-size: 20px;">Telegram</h3>
-                <p style="margin: 5px 0 0 0; font-size: 13px; color: #9ca3af;">Подписчики, реакции, бусты и спамблок</p>
-            </div>
-            <!-- Плитка TikTok -->
-            <div style="background: #111622; border: 1px solid #1c2536; padding: 25px; border-radius: 15px; text-align: center; cursor: pointer;" onclick="showPlatformMenu('tiktok')">
-                <img src="tiktok_logo.png" alt="TikTok" style="width: 100px; height: 100px; margin-bottom: 10px; object-fit: contain;">
-                <h3 style="margin: 0; color: white; font-size: 20px;">TikTok</h3>
-                <p style="margin: 5px 0 0 0; font-size: 13px; color: #9ca3af;">Поштучная накрутка продвижения TikTok</p>
-            </div>
-            <!-- Плитка ВКонтакте -->
-            <div style="background: #111622; border: 1px solid #1c2536; padding: 25px; border-radius: 15px; text-align: center; cursor: pointer;" onclick="showPlatformMenu('vk')">
-                <img src="vk_logo.png" alt="VK" style="width: 100px; height: 100px; margin-bottom: 10px; object-fit: contain;">
-                <h3 style="margin: 0; color: white; font-size: 20px;">ВКонтакте</h3>
-                <p style="margin: 5px 0 0 0; font-size: 13px; color: #9ca3af;">Голоса, лайки, просмотры и подписчики ВК</p>
-            </div>
-            <!-- Плитка YouTube -->
-            <div style="background: #111622; border: 1px solid #1c2536; padding: 25px; border-radius: 15px; text-align: center; cursor: pointer;" onclick="alert('Данный раздел сейчас в разработке')">
-                <img src="youtube_logo.png" alt="YouTube" style="width: 100px; height: 100px; margin-bottom: 10px; object-fit: contain;">
-                <h3 style="margin: 0; color: white; font-size: 20px;">YouTube</h3>
-                <p style="margin: 5px 0 0 0; font-size: 13px; color: #9ca3af;">Этот раздел в разработке</p>
-            </div>
-        </div>
-
-        <!-- Контейнеры для вложенных папок услуг -->
-        <div id="tgServicesRows" style="display: none;"><div id="tgRowsList"></div></div>
-        <div id="tgInnerMenuRows" style="display: none;"><div id="tgInnerList"></div></div>
-        <div id="tiktokServicesRows" style="display: none;"><div id="tiktokRowsList"></div></div>
-        <div id="vkServicesRows" style="display: none;"><div id="vkRowsList"></div></div>
-    </div>
-        <!-- Вкладка ИИ -->
-    <div id="aiGrid" class="grid" style="display: none;">
-        <div class="card" onclick="openModal('🤖 GOOGLE GEMINI PRO | Подписка на 18 месяцев', 69, 'gemini.png', false)">
-            <img src="gemini.png" alt="Gemini">
-            <div class="card-info">
-                <div class="title">🤖 GOOGLE GEMINI PRO | Подписка на 18 месяцев</div>
-                <div class="price-row"><div class="price">69 ₽</div></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Вкладка Продвижение -->
-    <div id="promoGrid" class="grid" style="display: none;">
-        <div class="card" onclick="openModal('🥰 📥 КАК ПОПАСТЬ В РЕКОМЕНДАЦИИ В TIKTOK', 15, 'rekom.png', false)">
-            <img src="rekom.png" alt="Gaid">
-            <div class="card-info">
-                <div class="title">🥰 📥 КАК ПОПАСТЬ В РЕКОМЕНДАЦИИ В TIKTOK</div>
-                <div class="price-row"><div class="price">15 ₽</div></div>
-            </div>
-        </div>
-        <div class="card" onclick="openModal('🔥 ТИКТОК НАКРУТКА ПАК МИНИМАЛИСТИК', 90, 'minimalistic.png', false)">
-            <img src="minimalistic.png" alt="Pack">
-            <div class="card-info">
-                <div class="title">🔥 ТИКТОК НАКРУТКА ПАК МИНИМАЛИСТИК</div>
-                <div class="price-row"><div class="price">90 ₽</div></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Вкладка Софт -->
-    <div id="softGrid" class="grid" style="display: none;">
-        <div class="card" onclick="openModal('💻 АКТИВАЦИЯ WINDOWS 10-11 (ЛЮБАЯ!)', 100, 'windows.png', false)">
-            <img src="windows.png" alt="Windows">
-            <div class="card-info">
-                <div class="title">💻 АКТИВАЦИЯ WINDOWS 10-11 (ЛЮБАЯ!)</div>
-                <div class="price-row"><div class="price">100 ₽</div></div>
-            </div>
-        </div>
-    </div>
-        <div style="text-align: center; padding: 20px 10px; font-size: 11px; color: #4b5563; letter-spacing: 0.5px;">Сайт разработан Владимиром Смирновым &copy; 2026</div>
-
-    <!-- Модальное окно -->
-    <div id="orderModal" class="modal">
-        <div class="modal-content">
-            <button onclick="closeModal()" style="position: absolute; top: 12px; right: 16px; background: none; border: none; color: #9ca3af; font-size: 22px; cursor: pointer;">&times;</button>
-            <div id="step1">
-                <img id="modalImg" src="" alt="Preview">
-                <h4 id="modalTitle" style="margin: 0 0 10px 0; font-size: 16px; line-height: 1.4; color: #e5e7eb;">Название</h4>
-                
-                <div id="quantityBlock" style="display: none; margin-bottom: 16px; text-align: left;">
-                    <label style="display: block; font-size: 13px; color: #9ca3af; margin-bottom: 6px;">Введите количество:</label>
-                    <input type="number" id="itemQuantity" value="100" min="1" oninput="calculateTotal()" style="width: 100%; padding: 12px; background: #080b10; border: 1px solid #1c2536; border-radius: 10px; color: white; font-size: 15px; font-weight: 600;">
-                    <div id="errorMsg" class="error-msg">Минимальное количество для заказа: 50</div>
-                    
-                    <!-- Селектор эмодзи -->
-                    <select id="emojiSelector" class="select-emoji">
-                        <option value="👍">👍 Большой палец вверх</option>
-                        <option value="❤️">❤️ Сердце</option>
-                        <option value="🔥">🔥 Огонь</option>
-                        <option value="🎉">🎉 Праздник</option>
-                        <option value="🤩">🤩 Вау</option>
-                        <option value="⚡">⚡ Молния</option>
-                        <option value="🤡">🤡 Клоун</option>
-                    </select>
+        <!-- ЭКРАН 2: ЧЕТЫРЕХУРОВНЕВЫЙ КАТАЛОГ -->
+        <div id="screen_catalog" style="display: none;">
+            <!-- Уровень 1: 4 Глобальных Раздела (Подключение твоих иконок из фото 2) -->
+            <div id="catalog_level_1" style="display: flex; flex-direction: column; gap: 12px;">
+                <div class="category-row-card" onclick="openCatalogLevel2('social')">
+                    <img src="icon_social.png" alt="Social">
+                    <div><h3>Соцсети</h3><p>Продвижение Telegram, TikTok, ВКонтакте</p></div>
                 </div>
+                <div class="category-row-card" onclick="openCatalogLevelFinal('ai')">
+                    <img src="icon_ai.png" alt="AI">
+                    <div><h3>ИИ</h3><p>Подписки на популярный искусственный интеллект</p></div>
+                </div>
+                <div class="category-row-card" onclick="openCatalogLevelFinal('promo')">
+                    <img src="icon_promo.png" alt="Promo">
+                    <div><h3>Продвижение</h3><p>Готовые гайды, мануалы и паки продвижения</p></div>
+                </div>
+                <div class="category-row-card" onclick="openCatalogLevelFinal('soft')">
+                    <img src="icon_keys.png" alt="Keys">
+                    <div><h3>Ключи</h3><p>Лицензионные ключи активации Windows и ОС</p></div>
+                </div>
+            </div>
 
-                <div style="font-size: 13px; color: #9ca3af; margin-bottom: 2px;" id="priceLabel">Цена:</div>
-                <div id="modalPrice" style="font-size: 24px; font-weight: 800; margin-bottom: 16px; color: #007bff;">0 ₽</div>
-                <button onclick="goToStep2()" id="nextStepBtn" class="btn">Перейти к оплате</button>
+            <!-- Уровень 2: Платформы Соцсетей -->
+            <div id="catalog_level_2_social" style="display: none; flex-direction: column; gap: 12px;">
+                <div class="category-row-card" onclick="openCatalogLevel3('tg')">
+                    <img src="telegram_logo.png" alt="TG">
+                    <div><h3>Telegram</h3><p>Подписчики, реакции, бусты и спамблок</p></div>
+                </div>
+                <div class="category-row-card" onclick="openCatalogLevelFinal('tiktok')">
+                    <img src="tiktok_logo.png" alt="TT">
+                    <div><h3>TikTok</h3><p>Поштучная накрутка продвижения аккаунта</p></div>
+                </div>
+                <div class="category-row-card" onclick="openCatalogLevelFinal('vk')">
+                    <img src="vk_logo.png" alt="VK">
+                    <div><h3>ВКонтакте</h3><p>Голоса, лайки, просмотры и подписчики</p></div>
+                </div>
+            </div>
+
+            <!-- Уровень 3: Папки Telegram -->
+            <div id="catalog_level_3_tg_folders" style="display: none; flex-direction: column; gap: 12px;"></div>
+
+            <!-- Уровень 4: Сетка Конечных Товаров -->
+            <div id="catalog_level_final_products" class="grid" style="display: none;"></div>
+        </div>
+
+        <!-- ЭКРАН 3: КОРЗИНА -->
+        <div id="screen_cart" style="display: none;">
+            <div class="cart-title-row">
+                <h3>Корзина</h3>
+                <span class="cart-clear-btn" onclick="clearEntireCart()">Очистить</span>
             </div>
             
-            <div id="step2" style="display: none;">
-                <img id="modalImgStep2" src="" alt="Preview" style="width: 100%; border-radius: 12px; margin-bottom: 16px; aspect-ratio: 16/11; object-fit: cover; border: 1px solid #1c2536; display: none;">
-                <h4 style="margin: 0 0 8px 0; font-size: 18px; color: #fff;">Оплата заказа</h4>
-                <div style="font-size: 26px; font-weight: 800; margin-bottom: 16px; color: #10b981;" id="payAmount">0 ₽</div>
-                 <a href="https://t.me/Smeshnoy_Ny_Tema" target="_blank" class="btn btn-pay">Оформить заказ у админа</a>
+            <div id="cartItemsListContainer"></div>
+
+            <div id="cartSummaryBlock" class="cart-summary-box">
+                <div class="summary-row"><span>Товаров</span><span id="summaryTotalItemsCount" style="color:#ffffff;">0 шт.</span></div>
+                <div class="summary-row" style="margin-top: 4px; padding-top: 14px; border-top: 1px solid #27272a;">
+                    <span>Итого</span>
+                    <span id="summaryFinalCost" class="summary-total-price">0 ₽</span>
+                </div>
             </div>
+            
+            <button id="btnOrderSubmit" class="btn" style="padding: 18px; margin-top: 24px;" onclick="processCheckoutSubmit()">
+                <div class="btn-wallet-icon">💳</div>
+                <span id="btnOrderSubmitText">Купить — 0 ₽</span>
+            </button>
         </div>
+
+    </div> <!-- Конец app-container -->
+
+    <div class="tab-bar">
+        <div class="nav-item active" onclick="navigateTabBar('welcome', this)"><span class="nav-icon">🏠</span><span>Главная</span></div>
+        <div class="nav-item" id="nav_catalog_btn" onclick="navigateTabBar('catalog', this)"><span class="nav-icon">📂</span><span>Каталог</span></div>
+        <div class="nav-item" onclick="navigateTabBar('cart', this)"><span class="nav-icon">🛒</span><span>Корзина</span></div>
     </div>
 
-    <script type="text/javascript">
-                let currentPrice = 0; let isCountable = false; let minLimit = 1; let activePlatform = ''; let currentStep = 'welcome'; const cardNumber = "4276000000000000"; 
-        
-        function filterCategory(category, element) {
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active')); element.classList.add('active');
-            ['mainPageContainer', 'socialStepContainer', 'aiGrid', 'promoGrid', 'softGrid'].forEach(id => {
-                const el = document.getElementById(id); if(el) el.style.display = 'none';
-            });
-            if (category === 'main') document.getElementById('mainPageContainer').style.display = 'block';
-            else if (category === 'social') { document.getElementById('socialStepContainer').style.display = 'block'; resetSocialMenu(); }
-            else if (category === 'ai') document.getElementById('aiGrid').style.display = 'flex';
-            else if (category === 'promo') document.getElementById('promoGrid').style.display = 'flex';
-            else if (category === 'soft') document.getElementById('softGrid').style.display = 'flex';
-        }
+    <!-- Модальное окно калькулятора -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <button onclick="closeModal()" style="position: absolute; top: 12px; right: 16px; background: none; border: none; color: #a1a1aa; font-size: 22px; cursor: pointer;">&times;</button>
+            <h4 id="modalTitle" style="margin: 0 0 14px 0; font-size: 13px; line-height: 1.4; color: #f4f4f5;">Название</h4>
+            
+            <div id="quantityBlock" style="margin-bottom: 16px; text-align: left;">
+                <label style="display: block; font-size: 11px; color: #a1a1aa; margin-bottom: 6px;">Укажите количество:</label>
+                <input type="number" id="itemQuantity" class="input-qty" value="100" min="1" oninput="calculateModalLiveTotal()">
+                <div id="errorMsg" class="error-msg"></div>
+                
+                <select id="emojiSelector" class="select-emoji">  
+                    <option value="👍">👍 Большой палец вверх</option>  
+                    <option value="❤️">❤️ Сердце</option>  
+                    <option value="🔥">🔥 Огонь</option>  
+                    <option value="🎉">🎉 Праздник</option>  
+                    <option value="🤩">🤩 Вау</option>  
+                    <option value="⚡">⚡ Молния</option>  
+                    <option value="🤡">🤡 Клоун</option>  
+                </select> 
+            </div>
 
-        // Обновленная база данных тарифов строго по ТЗ
-        const subProducts = {
+            <div style="font-size: 12px; color: #a1a1aa; margin-bottom: 2px;">Стоимость:</div>
+            <div id="modalPrice" style="font-size: 18px; color: #2563eb;">0 ₽</div>
+            <button onclick="addSelectedToCartObject()" id="modalAddBtn" class="btn"><span>Добавить в корзину</span></button>
+        </div>
+    </div>
+    <script type="text/javascript">
+        const tgApp = window.Telegram?.WebApp;
+        if (tgApp) { tgApp.ready(); tgApp.expand(); }
+
+        let cartState = JSON.parse(localStorage.getItem('gayer_cart_session')) || [];
+        let activeTargetProduct = null;
+        let navigationHistoryStack = [];
+
+        // Полная база данных тарифов с сохранением путей к картинкам
+        const dataProducts = {
             tg_subscribers: [
-                { name: "⭐️ Telegram Подписчики [30 дней без списаний]", price: 0.067, img: 'boostsub30d.png', min: 10, isDefault: true },
-                { name: "⭐️ Telegram Подписчики [1-3 дня без списаний]", price: 0.03, img: 'boostsub3d.png', min: 100 },
-                { name: "⭐️ Telegram Подписчики [7 дней без списаний]", price: 0.042, img: 'boostsub7d.png', min: 10 }
+                { id: "tg_sub_30", name: "⭐️ Telegram Подписчики [30 дней без списаний]", price: 0.067, min: 10, countable: true, img: "boostsub30d.png" },
+                { id: "tg_sub_1", name: "⭐️ Telegram Подписчики [1-3 дня без списаний]", price: 0.03, min: 100, countable: true, img: "boostsub3d.png" },
+                { id: "tg_sub_7", name: "⭐️ Telegram Подписчики [7 дней без списаний]", price: 0.042, min: 10, countable: true, img: "boostsub7d.png" }
             ],
             tg_reactions: [
-                { name: "Telegram Позитивные Реакции [❤️‍🔥 🔥 💯 🎉 🥰 😍]", price: 0.003, img: 'reaction.png', min: 50, isDefault: true },
-                { name: "Telegram Реакция [👍❤️🔥🎉]", price: 0.003, img: 'reaction.png', min: 50 },
-                { name: "Одна любая реакция в телеграмм (выбор эмодзи)", price: 0.004, img: 'reaction.png', min: 50, hasEmojiSelect: true }
+                { id: "tg_react_pos", name: "Telegram Позитивные Реакции [❤️‍🔥 🔥 💯 🎉]", price: 0.003, min: 50, countable: true, img: "reaction.png" },
+                { id: "tg_react_mix", name: "Telegram Реакция [👍❤️🔥🎉]", price: 0.003, min: 50, countable: true, img: "reaction.png" },
+                { id: "tg_react_emo", name: "Одна любая реакция в телеграмм (выбор эмодзи)", price: 0.004, min: 50, countable: true, img: "reaction.png", hasEmojiSelect: true }
             ],
             tg_boosts: [
-                { name: "🚀 Бусты для канала (1-3 дня)", price: 2.2, img: 'boost3d.png', min: 1 },
-                { name: "🚀 Бусты для канала (7 дней)", price: 5.0, img: 'boost7d.png', min: 1 },
-                { name: "🚀 Бусты для канала (30 дней)", price: 22.0, img: 'boost30d.png', min: 1 }
+                { id: "tg_boost_3", name: "🚀 Бусты для канала (1-3 дня)", price: 2.2, min: 1, countable: true, img: "boost3d.png" },
+                { id: "tg_boost_7", name: "🚀 Бусты для канала (7 дней)", price: 5.0, min: 1, countable: true, img: "boost7d.png" },
+                { id: "tg_boost_30", name: "🚀 Бусты для канала (30 дней)", price: 22.0, min: 1, countable: true, img: "boost30d.png" }
+            ],
+            tg_spamblock: [
+                { id: "tg_spam", name: "⚙️ Снятие Spamblock Telegram", price: 90.0, min: 1, countable: false, img: "spamblock.png" }
             ],
             tiktok: [
-                { name: "👥 TikTok Подписчики [Без гарантии⛔️]", price: 1.5, img: 'tiktok_sub.png', min: 50 },
-                { name: "📥 TikTok Просмотры [Без гарантии ⛔️]", price: 0.001, img: 'tiktok_eye.png', min: 100 },
-                { name: "⭐️ TikTok Просмотры [Без списаний]", price: 0.009, img: 'tiktok_eye.png', min: 100 },
-                { name: "⭐️ TikTok Лайки [Без гарантии⛔️]", price: 0.04, img: 'tiktok_like.png', min: 10 },
-                { name: "⭐️ TikTok Лайки {Гарантия 30 дней}", price: 0.09, img: 'tiktok_like.png', min: 10 },
-                { name: "TikTok Сохранения [Без списаний ♻️]", price: 0.0019, img: 'tiktok_save.png', min: 50 },
-                { name: "TikTok Репосты", price: 0.03, img: 'tiktok_repost.png', min: 10 }
+                { id: "tt_sub", name: "👥 TikTok Подписчики [Без гарантии⛔️]", price: 1.5, min: 50, countable: true, img: "tiktok_sub.png" },
+                { id: "tt_view_no", name: "📥 TikTok Просмотры [Без гарантии ⛔️]", price: 0.001, min: 100, countable: true, img: "tiktok_eye.png" },
+                { id: "tt_view_yes", name: "⭐️ TikTok Просмотры [Без списаний]", price: 0.009, min: 100, countable: true, img: "tiktok_eye.png" },
+                { id: "tt_like_no", name: "⭐️ TikTok Лайки [Без гарантии⛔️]", price: 0.04, min: 10, countable: true, img: "tiktok_like.png" },
+                { id: "tt_like_yes", name: "⭐️ TikTok Лайки {Гарантия 30 дней}", price: 0.09, min: 10, countable: true, img: "tiktok_like.png" },
+                { id: "tt_save", name: "TikTok Сохранения [Без списаний ♻️]", price: 0.0019, min: 50, countable: true, img: "tiktok_save.png" },
+                { id: "tt_repost", name: "TikTok Репосты", price: 0.03, min: 10, countable: true, img: "tiktok_repost.png" }
             ],
             vk: [
-                { name: "🎟 Голоса VK", price: 10.0, img: 'vk.png', min: 1 },
-                { name: "👁 Просмотры VK", price: 0.04, img: 'vk_eye.png', min: 1 },
-                { name: "❤️ Лайки VK", price: 0.05, img: 'vk_like.png', min: 1 },
-                { name: "👥 Подписчики VK", price: 0.11, img: 'vk_sub.png', min: 1 }
+                { id: "vk_votes", name: "🎟 Голоса VK", price: 10.0, min: 1, countable: true, img: "vk.png" },
+                { id: "vk_views", name: "👁 Просмотры VK", price: 0.04, min: 1, countable: true, img: "vk_eye.png" },
+                { id: "vk_likes", name: "❤️ Лайки VK", price: 0.05, min: 1, countable: true, img: "vk_like.png" },
+                { id: "vk_sub", name: "👥 Подписчики VK", price: 0.11, min: 1, countable: true, img: "vk_sub.png" }
+            ],
+            ai: [
+                { id: "ai_gemini", name: "🤖 GOOGLE GEMINI PRO | Подписка на 18 месяцев", price: 69.0, min: 1, countable: false, img: "gemini.png" }
+            ],
+            promo: [
+                { id: "p_recom", name: "🥰 📥 КАК ПОПАСТЬ В РЕКОМЕНДАЦИИ В TIKTOK", price: 15.0, min: 1, countable: false, img: "rekom.png" },
+                { id: "p_mini", name: "🔥 ТИКТОК НАКРУТКА ПАК МИНИМАЛИСТИК", price: 90.0, min: 1, countable: false, img: "minimalistic.png" }
+            ],
+            soft: [
+                { id: "soft_win", name: "💻 АКТИВАЦИЯ WINDOWS 10-11 (ЛЮБАЯ!)", price: 100.0, min: 1, countable: false, img: "windows.png" }
             ]
         };
 
@@ -242,162 +347,272 @@
             { name: "👥 Подписчики", id: "tg_subscribers" },
             { name: "🔥 Реакции", id: "tg_reactions" },
             { name: "🚀 Бусты", id: "tg_boosts" },
-            { name: "⚙️ Снятие Spamblock", id: "spamblock" }
+            { name: "⚙️ Снятие Spamblock", id: "tg_spamblock" }
         ];
 
-        function showPlatformMenu(platform) {
-            activePlatform = platform; currentStep = 'platform_rows';
-            document.getElementById('socialWelcomeCard').style.display = 'none';
-            document.getElementById('menuBackButton').style.display = 'inline-block';
-            
-            if (platform === 'tg') {
-                const listContainer = document.getElementById('tgRowsList');
-                document.getElementById('tgServicesRows').style.display = 'block';
-                if (listContainer) {
-                    listContainer.innerHTML = '';
-                    tgFolders.forEach(folder => {
-                        const row = document.createElement('div');
-                        row.style = "background: #111622; padding: 16px; margin-bottom: 10px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid #1c2536; color: white; font-weight: 500; font-size: 14px;";
-                        row.innerHTML = `<span>${folder.name}</span> <span style="color: #4b5563;">→</span>`;
-                        if (folder.id === 'spamblock') {
-                            row.onclick = function() { openModal('⚙️ Снятие Spamblock Telegram', 90, 'spamblock.png', false); };
-                        } else {
-                            row.onclick = function() { showTgInnerFolder(folder.id); };
-                        }
-                        listContainer.appendChild(row);
-                    });
+        if (tgApp) {
+            tgApp.BackButton.onClick(() => {
+                if (navigationHistoryStack.length > 0) {
+                    let prevLevel = navigationHistoryStack.pop();
+                    executeSwitchCatalogDOM(prevLevel.name, prevLevel.key);
                 }
-            } else {
-                const listId = platform + 'ServicesRows';
-                const listContainer = document.getElementById(platform + 'RowsList');
-                document.getElementById(listId).style.display = 'block';
-                if (listContainer) {
-                    listContainer.innerHTML = '';
-                    subProducts[platform].forEach(item => {
-                        const row = document.createElement('div');
-                        row.style = "background: #111622; padding: 16px; margin-bottom: 10px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid #1c2536; color: white; font-weight: 500; font-size: 14px;";
-                        row.innerHTML = `<span>${item.name}</span> <span style="color: #4b5563;">→</span>`;
-                        row.onclick = function() { openModal(item.name, item.price, item.img, true, item.min); };
-                        listContainer.appendChild(row);
-                    });
-                }
-            }
+                if (navigationHistoryStack.length === 0) tgApp.BackButton.hide();
+            });
         }
 
-        function showTgInnerFolder(folderId) {
-            currentStep = 'tg_inner_' + folderId;
-            document.getElementById('tgServicesRows').style.display = 'none';
-            const innerContainer = document.getElementById('tgInnerList');
-            document.getElementById('tgInnerMenuRows').style.display = 'block';
+        function saveCartToLocalStorage() {
+            localStorage.setItem('gayer_cart_session', JSON.stringify(cartState));
+            renderCartScreenDOM();
+        }
+
+        function navigateTabBar(screen, tabNode) {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            tabNode.classList.add('active');
+
+            document.getElementById('screen_welcome').style.display = screen === 'welcome' ? 'block' : 'none';
+            document.getElementById('screen_catalog').style.display = screen === 'catalog' ? 'block' : 'none';
+            document.getElementById('screen_cart').style.display = screen === 'cart' ? 'block' : 'none';
             
-            if (innerContainer) {
-                innerContainer.innerHTML = '';
-                const items = [...subProducts[folderId]].sort((a,b) => (b.isDefault ? 1 : 0) - (a.isDefault ? 1 : 0));
-                items.forEach(item => {
-                    const row = document.createElement('div');
-                    row.style = "background: #111622; padding: 16px; margin-bottom: 10px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border: 1px solid #1c2536; color: white; font-weight: 500; font-size: 14px;";
-                    row.innerHTML = `<span>${item.name} ${item.isDefault ? '<span style="color:#007bff; font-size:11px;">[Рекомендуем]</span>' : ''}</span> <span style="color: #4b5563;">→</span>`;
-                    row.onclick = function() { openModal(item.name, item.price, item.img, true, item.min, item.hasEmojiSelect); };
-                    innerContainer.appendChild(row);
+            if (screen === 'catalog') {
+                navigationHistoryStack = [];
+                if (tgApp) tgApp.BackButton.hide();
+                executeSwitchCatalogDOM('1');
+            } else {
+                if (tgApp) tgApp.BackButton.hide();
+            }
+            if (screen === 'cart') renderCartScreenDOM();
+        }
+        function openCatalogLevel2(key) {
+            navigationHistoryStack.push({name: '1', key: null});
+            if (tgApp) tgApp.BackButton.show();
+            executeSwitchCatalogDOM('2_social');
+        }
+
+        function openCatalogLevel3(key) {
+            navigationHistoryStack.push({name: '2_social', key: null});
+            executeSwitchCatalogDOM('3_tg_folders');
+        }
+
+        function openCatalogLevelFinal(keyData) {
+            if (['ai', 'promo', 'soft'].includes(keyData)) {
+                navigationHistoryStack.push({name: '1', key: null});
+            } else {
+                navigationHistoryStack.push({name: (activeTargetProduct === 'tg' ? '3_tg_folders' : '2_social'), key: activeTargetProduct});
+            }
+            if (tgApp) tgApp.BackButton.show();
+            executeSwitchCatalogDOM('final_products', keyData);
+        }
+
+        function executeSwitchCatalogDOM(levelName, keyData = null) {
+            const lvl1 = document.getElementById('catalog_level_1');
+            const lvl2 = document.getElementById('catalog_level_2_social');
+            const lvl3 = document.getElementById('catalog_level_3_tg_folders');
+            const lvlFinal = document.getElementById('catalog_level_final_products');
+
+            lvl1.style.display = levelName === '1' ? 'flex' : 'none';
+            lvl2.style.display = levelName === '2_social' ? 'flex' : 'none';
+            lvl3.style.display = levelName === '3_tg_folders' ? 'flex' : 'none';
+            lvlFinal.style.display = levelName === 'final_products' ? 'grid' : 'none';
+
+            if (levelName === '2_social') activeTargetProduct = 'social';
+            if (levelName === '3_tg_folders') {
+                activeTargetProduct = 'tg';
+                lvl3.innerHTML = '';
+                tgFolders.forEach(folder => {
+                    const block = document.createElement('div');
+                    block.className = 'card';
+                    block.style = "padding: 18px; flex-direction: row; justify-content: space-between; align-items: center; font-size: 13px; border: 1px solid #2c2c2e; background: #1c1c1e;";
+                    block.innerHTML = `<span>${folder.name}</span> <span style="color: #52525b;">→</span>`;
+                    block.onclick = () => {
+                        if (folder.id === 'tg_spamblock') openOrderCalculationModal(dataProducts.tg_spamblock);
+                        else openCatalogLevelFinal(folder.id);
+                    };
+                    lvl3.appendChild(block);
+                });
+            }
+
+            if (levelName === 'final_products') {
+                lvlFinal.innerHTML = '';
+                let targetArray = dataProducts[keyData] || [];
+                targetArray.forEach(prod => {
+                    const itemCard = document.createElement('div');
+                    itemCard.className = 'card';
+                    itemCard.innerHTML = `
+                        <img src="${prod.img}" alt="Preview">
+                        <div class="card-info">
+                            <div class="title">${prod.name}</div>
+                            <div class="price-row">
+                                <div class="price">${prod.price} ₽${prod.countable ? ' / шт.' : ''}</div>
+                                <div class="add-badge">+</div>
+                            </div>
+                        </div>
+                    `;
+                    itemCard.onclick = () => openOrderCalculationModal(prod);
+                    lvlFinal.appendChild(itemCard);
                 });
             }
         }
 
-        function menuGoBack() {
-            if (currentStep === 'platform_rows') {
-                resetSocialMenu();
-            } else if (currentStep.startsWith('tg_inner_')) {
-                document.getElementById('tgInnerMenuRows').style.display = 'none';
-                document.getElementById('tgServicesRows').style.display = 'block';
-                currentStep = 'platform_rows';
-            }
-        }
-
-        function resetSocialMenu() {
-            currentStep = 'welcome'; activePlatform = '';
-            document.getElementById('menuBackButton').style.display = 'none';
-            document.getElementById('socialWelcomeCard').style.display = 'flex';
-            ['tgServicesRows', 'tgInnerMenuRows', 'tiktokServicesRows', 'vkServicesRows'].forEach(id => {
-                const el = document.getElementById(id); if(el) el.style.display = 'none';
-            });
-        }
-
-        function openModal(title, price, imgUrl, isRateBased = false, minimum = 1, showEmoji = false) {
-            currentPrice = parseFloat(price); isCountable = isRateBased; minLimit = minimum;
-            const qtyInput = document.getElementById('itemQuantity');
+        function openOrderCalculationModal(productObj) {
+            activeTargetProduct = productObj;
+            document.getElementById('modalTitle').innerText = productObj.name;
+            const inputField = document.getElementById('itemQuantity');
             const emojiSel = document.getElementById('emojiSelector');
+            emojiSel.style.display = productObj.hasEmojiSelect ? 'block' : 'none';
             
-            document.getElementById('modalTitle').innerText = title;
-            document.getElementById('modalImg').src = imgUrl || '';
-            document.getElementById('modalImg').style.display = imgUrl ? 'block' : 'none';
-            
-            if (showEmoji) emojiSel.style.display = 'block';
-            else emojiSel.style.display = 'none';
-            
-            if (isCountable) {
+            if (productObj.countable) {
                 document.getElementById('quantityBlock').style.display = 'block';
-                document.getElementById('priceLabel').innerText = "Итого к оплате:";
-                qtyInput.value = minLimit;
-                calculateTotal();
+                inputField.value = productObj.min;
             } else {
                 document.getElementById('quantityBlock').style.display = 'none';
-                document.getElementById('priceLabel').innerText = "Цена:";
-                            document.getElementById('modalPrice').innerText = currentPrice + ' ₽';
-                document.getElementById('nextStepBtn').disabled = false;
-                document.getElementById('errorMsg').style.display = 'none';
+                inputField.value = 1;
             }
-            document.getElementById('step1').style.display = 'block';
-            document.getElementById('step2').style.display = 'none';
+            calculateModalLiveTotal();
             document.getElementById('orderModal').style.display = 'flex';
         }
 
-        function calculateTotal() {
-            if (!isCountable) return;
-            const qtyInput = document.getElementById('itemQuantity');
-            let count = parseInt(qtyInput.value);
-            if (isNaN(count)) count = 0;
-            
-            const errEl = document.getElementById('errorMsg');
-            const btnEl = document.getElementById('nextStepBtn');
-            
-            if (count < minLimit) {
-                errEl.innerText = `Минимальное количество для заказа: ${minLimit} шт.`;
-                errEl.style.display = 'block';
-                btnEl.disabled = true;
+        function calculateModalLiveTotal() {
+            if (!activeTargetProduct) return;
+            const inputField = document.getElementById('itemQuantity');
+            let quantity = parseInt(inputField.value) || 0;
+            const errBox = document.getElementById('errorMsg');
+            const addBtn = document.getElementById('modalAddBtn');
+
+            if (activeTargetProduct.countable && quantity < activeTargetProduct.min) {
+                errBox.innerText = `Минимальный заказ: ${activeTargetProduct.min} шт.`;
+                errBox.style.display = 'block';
+                addBtn.disabled = true;
             } else {
-                errEl.style.display = 'none';
-                btnEl.disabled = false;
+                errBox.style.display = 'none';
+                addBtn.disabled = false;
             }
-            let total = count * currentPrice;
-            document.getElementById('modalPrice').innerText = (total >= 1 ? total.toFixed(2) : total.toFixed(4)) + ' ₽';
+            let sum = quantity * activeTargetProduct.price;
+            document.getElementById('modalPrice').innerText = (sum >= 1 ? sum.toFixed(2) : sum.toFixed(4)) + ' ₽';
         }
 
-        function goToStep2() {
-            let title = document.getElementById('modalTitle').innerText;
-            if (document.getElementById('emojiSelector').style.display === 'block') {
-                title += ` (Эмодзи: ${document.getElementById('emojiSelector').value})`;
+        function closeModal() {
+            document.getElementById('orderModal').style.display = 'none';
+            activeTargetProduct = null;
+        }
+                        function addSelectedToCartObject() {
+            if (!activeTargetProduct) return;
+            const quantity = parseInt(document.getElementById('itemQuantity').value) || 1;
+            const emojiSel = document.getElementById('emojiSelector');
+            let chosenEmoji = activeTargetProduct.hasEmojiSelect ? emojiSel.value : null;
+            let existingItem = cartState.find(item => item.id === activeTargetProduct.id && item.emoji === chosenEmoji);
+            
+            if (existingItem) {
+                existingItem.qty = activeTargetProduct.countable ? (existingItem.qty + quantity) : 1;
+            } else {
+                cartState.push({
+                    id: activeTargetProduct.id,
+                    name: activeTargetProduct.name,
+                    price: activeTargetProduct.price,
+                    img: activeTargetProduct.img,
+                    qty: quantity,
+                    countable: activeTargetProduct.countable,
+                    min: activeTargetProduct.min,
+                    emoji: chosenEmoji
+                });
             }
-            document.getElementById('payAmount').innerText = document.getElementById('modalPrice').innerText;
-            const srcImg = document.getElementById('modalImg');
-            if (srcImg.style.display === 'block') {
-                document.getElementById('modalImgStep2').src = srcImg.src;
-                document.getElementById('modalImgStep2').style.display = 'block';
-            } else document.getElementById('modalImgStep2').style.display = 'none';
-            document.getElementById('step1').style.display = 'none';
-            document.getElementById('step2').style.display = 'block';
+            saveCartToLocalStorage();
+            closeModal();
+            if (tgApp && tgApp.HapticFeedback) tgApp.HapticFeedback.notificationOccurred("success");
         }
 
-        function closeModal() { document.getElementById('orderModal').style.display = 'none'; }
-        
-        function copyCard() {
-            navigator.clipboard.writeText(cardNumber);
-            const toast = document.getElementById('toast'); toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 1500);
+        function renderCartScreenDOM() {
+            const container = document.getElementById('cartItemsListContainer');
+            container.innerHTML = '';
+            if (cartState.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:40px 10px; color:#a1a1aa; font-size:12px;">Ваша корзина пуста 🛒</div>';
+                document.getElementById('cartSummaryBlock').style.display = 'none';
+                document.getElementById('btnOrderSubmit').style.display = 'none';
+                return;
+            }
+            document.getElementById('cartSummaryBlock').style.display = 'block';
+            document.getElementById('btnOrderSubmit').style.display = 'flex';
+            let totalItems = 0; let finalCostSum = 0;
+
+            cartState.forEach((item, index) => {
+                let currentItemCost = item.qty * item.price;
+                totalItems += item.qty; finalCostSum += currentItemCost;
+                const rowBlock = document.createElement('div');
+                rowBlock.className = 'cart-item';
+                let displayTitle = item.name;
+                if (item.emoji) displayTitle += ` (Эмодзи: ${item.emoji})`;
+
+                rowBlock.innerHTML = `
+                    <img src="${item.img}" class="cart-item-img" alt="Item">
+                    <div class="cart-item-details">
+                        <div class="cart-item-title">${displayTitle}</div>
+                        <div class="cart-item-formula">${item.price} ₽ × ${item.qty}</div>
+                    </div>
+                    <div class="cart-control-block">
+                        <button class="cart-btn-math" onclick="changeCartItemQuantityMath(${index}, -1)">-</button>
+                        <input type="number" class="cart-input-value" value="${item.qty}" oninput="changeCartItemQuantityInput(${index}, this)">
+                        <button class="cart-btn-math" onclick="changeCartItemQuantityMath(${index}, 1)">+</button>
+                    </div>
+                    <button class="cart-item-delete" onclick="removeCartItemEntirely(${index})">&#10005;</button>
+                `;
+                container.appendChild(rowBlock);
+            });
+            document.getElementById('summaryTotalItemsCount').innerText = totalItems + ' шт.';
+            let formattedSum = (finalCostSum >= 1 ? finalCostSum.toFixed(2) : finalCostSum.toFixed(4)) + ' ₽';
+            document.getElementById('summaryFinalCost').innerText = formattedSum;
+            document.getElementById('btnOrderSubmitText').innerText = `Купить — ${formattedSum}`;
         }
-        
-        if (typeof window.Telegram !== 'undefined' && window.Telegram.WebApp) { 
-            window.Telegram.WebApp.ready(); 
-            window.Telegram.WebApp.expand(); 
+
+        function changeCartItemQuantityMath(index, step) {
+            let item = cartState[index];
+            if (!item.countable) return;
+            item.qty += step;
+            if (item.qty <= 0 || (item.qty < item.min && step < 0)) cartState.splice(index, 1);
+            saveCartToLocalStorage();
+        }
+
+        function changeCartItemQuantityInput(index, inputNode) {
+            let item = cartState[index];
+            let rawValue = parseInt(inputNode.value);
+            if (isNaN(rawValue) || rawValue <= 0) {
+                cartState.splice(index, 1);
+                saveCartToLocalStorage();
+                return;
+            }
+            item.qty = rawValue;
+            saveCartToLocalStorage();
+        }
+
+        function removeCartItemEntirely(index) { cartState.splice(index, 1); saveCartToLocalStorage(); }
+        function clearEntireCart() { cartState = []; saveCartToLocalStorage(); }
+
+        function processCheckoutSubmit() {
+            if (cartState.length === 0) return;
+            let isAnyInputEmpty = false;
+            document.querySelectorAll('.cart-input-value').forEach(input => {
+                if(input.value === "" || parseInt(input.value) <= 0) isAnyInputEmpty = true;
+            });
+            if(isAnyInputEmpty) return;
+
+            let username = tgApp?.initDataUnsafe?.user?.username ? `@${tgApp.initDataUnsafe.user.username}` : 'Покупатель';
+            let userId = tgApp?.initDataUnsafe?.user?.id || 'Не определен';
+            let checkTextMessage = `📦 **Новый заказ от ${username}**\n\n`;
+            let finalSum = 0;
+
+            cartState.forEach(item => {
+                let cost = item.qty * item.price; finalSum += cost;
+                let titleString = item.name; if (item.emoji) titleString += ` (Эмодзи: ${item.emoji})`;
+                checkTextMessage += `• **${titleString}**\n  Количество: ${item.qty} шт. — ${(cost >= 1 ? cost.toFixed(2) : cost.toFixed(4))} ₽\n\n`;
+            });
+            checkTextMessage += `💰 **Итого к оплате: ${(finalSum >= 1 ? finalSum.toFixed(2) : finalSum.toFixed(4))} ₽**\n`;
+            checkTextMessage += `🆔 ID пользователя: \`${userId}\`\n`;
+
+            if (tgApp && tgApp.sendData) {
+                tgApp.sendData(checkTextMessage);
+                tgApp.close();
+            } else {
+                alert("Заказ оформлен!");
+                window.open(`https://t.me/Smeshnoy_Ny_Tema`, '_blank');
+            }
         }
     </script>
 </body>
