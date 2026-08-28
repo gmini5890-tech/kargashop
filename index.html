@@ -4,17 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GayerShop</title>
-    <!-- Подключение шрифта Unbounded с поддержкой максимальной жирности Extra-Bold (800) -->
-    <link rel="preconnect" href="https://googleapis.com">
-    <link rel="preconnect" href="https://gstatic.com" crossorigin>
-    <link href="https://googleapis.com/css2?family=Unbounded:wght@800&display=swap" rel="stylesheet">
     <script src="https://telegram.org"></script>
     <style>
+        /* Принудительный жесткий импорт шрифта Unbounded для обхода блокировок Telegram Mini App */
+        @import url('https://googleapis.com');
+
         /* Полный сброс отступов */
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         
-        /* Принудительное наложение шрифта Unbounded Extra-Bold на ВЕСЬ сайт */
-        body, input, select, button, div, span, h2, h3, h4, p { 
+        /* Жесткое наложение шрифта Unbounded Extra-Bold на абсолютно все элементы */
+        body, input, select, button, div, span, h2, h3, h4, p, li, strong { 
             font-family: 'Unbounded', sans-serif !important; 
             font-weight: 800 !important;
         }
@@ -29,25 +28,16 @@
             min-height: 100vh;
         }
 
-        /* Мобильный контейнер Telegram Mini App */
+        /* Ограниченный контейнер для симуляции мобильного нативного приложения */
         .app-container {
             width: 100%;
             max-width: 420px;
-            padding: 16px 16px 110px 16px;
+            padding: 24px 16px 110px 16px;
             display: flex;
             flex-direction: column;
         }
-        /* Шапка с логотипом строго по центру (Исправление по фото 1) */
-        .header { display: flex; align-items: center; justify-content: center; margin-bottom: 24px; padding: 4px 0; width: 100%; }
-        .logo { 
-            font-size: 18px; 
-            letter-spacing: -0.5px; 
-            color: #ffffff; 
-            text-transform: none;
-        }
-        
         /* Сетка для двухколоночного вывода товаров */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
 
         /* Крупные нативные плитки меню категорий по образцу RAPTOR */
         .category-row-card { 
@@ -64,7 +54,7 @@
         }
         .category-row-card:active { background: #27272a; }
         
-        /* Иконки категорий (Исправление по фото 2) */
+        /* Иконки категорий из фото 2 */
         .category-row-card img { 
             width: 44px; 
             height: 44px; 
@@ -73,111 +63,122 @@
             border-radius: 0;
         }
         
-        .category-row-card h3 { font-size: 15px; color: #ffffff; letter-spacing: -0.5px; }
-        .category-row-card p { font-size: 10px; color: #71717a; margin-top: 4px; line-height: 1.3; }
+        .category-row-card h3 { font-size: 14px; color: #ffffff; letter-spacing: -0.5px; }
+        .category-row-card p { font-size: 9px; color: #71717a; margin-top: 4px; line-height: 1.4; }
         /* Сетка конечных товаров в каталоге */
         .card { background: #18181b; border-radius: 16px; overflow: hidden; border: 1px solid #27272a; cursor: pointer; display: flex; flex-direction: column; transition: transform 0.15s ease; }
         .card:active { transform: scale(0.97); }
         .card img { width: 100%; height: auto; display: block; aspect-ratio: 16/11; object-fit: cover; border-bottom: 1px solid #27272a; }
         .card-info { padding: 14px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; }
-        .title { font-size: 11px; line-height: 1.4; color: #f4f4f5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 32px; letter-spacing: -0.5px; }
+        .title { font-size: 10px; line-height: 1.4; color: #f4f4f5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 28px; letter-spacing: -0.5px; }
         .price-row { display: flex; align-items: center; justify-content: space-between; }
-        .price { color: #ffffff; font-size: 14px; letter-spacing: -0.5px; }
+        .price { color: #ffffff; font-size: 12px; letter-spacing: -0.5px; }
         .add-badge { background: #2563eb; color: #ffffff; font-size: 16px; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 
         /* Всплывающие модальные окна */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 100; padding: 16px; backdrop-filter: blur(10px); }
         .modal-content { background: #18181b; width: 100%; max-width: 360px; padding: 24px; border-radius: 24px; border: 1px solid #27272a; text-align: center; position: relative; }
-        .input-qty { width: 100%; padding: 14px; background: #000000; border: 1px solid #27272a; border-radius: 12px; color: #ffffff; font-size: 15px; text-align: center; margin-top: 6px; }
-        .select-emoji { width: 100%; padding: 14px; background: #000000; border: 1px solid #27272a; border-radius: 12px; color: #ffffff; font-size: 14px; margin-top: 10px; display: none; }
+        .input-qty { width: 100%; padding: 14px; background: #000000; border: 1px solid #27272a; border-radius: 12px; color: #ffffff; font-size: 14px; text-align: center; margin-top: 6px; }
+        .select-emoji { width: 100%; padding: 14px; background: #000000; border: 1px solid #27272a; border-radius: 12px; color: #ffffff; font-size: 13px; margin-top: 10px; display: none; }
         
-        /* Главная кнопка во всю ширину экрана в стиле RAPTOR */
-        .btn { display: flex; align-items: center; justify-content: center; width: 100%; background: #2563eb; color: #ffffff; padding: 16px; border: none; border-radius: 14px; cursor: pointer; font-size: 14px; margin-top: 16px; gap: 8px; }
+        /* Главная кнопка действия */
+        .btn { display: flex; align-items: center; justify-content: center; width: 100%; background: #2563eb; color: #ffffff; padding: 16px; border: none; border-radius: 14px; cursor: pointer; font-size: 13px; margin-top: 16px; gap: 8px; }
         .btn:disabled { background: #18181b !important; color: #71717a !important; border: 1px solid #27272a !important; cursor: not-allowed; }
-                /* Специфичные стили КОРЗИНЫ по макету RAPTOR */
-        .cart-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-top: 8px; }
-        .cart-title-row h3 { font-size: 22px; color: #ffffff; letter-spacing: -0.5px; }
-        .cart-clear-btn { font-size: 12px; color: #71717a; cursor: pointer; }
+        /* Специфичные стили КОРЗИНЫ по макету RAPTOR */
+        .cart-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .cart-title-row h3 { font-size: 20px; color: #ffffff; letter-spacing: -0.5px; }
+        .cart-clear-btn { font-size: 11px; color: #71717a; cursor: pointer; }
         
         .cart-item { background: #18181b; border: 1px solid #27272a; border-radius: 20px; padding: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 16px; position: relative; }
         .cart-item-img { width: 52px; height: 56px; border-radius: 12px; border: 1px solid #27272a; object-fit: cover; }
         .cart-item-details { flex-grow: 1; display: flex; flex-direction: column; gap: 6px; }
-        .cart-item-title { font-size: 12px; color: #ffffff; padding-right: 35px; line-height: 1.4; letter-spacing: -0.5px; }
-        .cart-item-formula { font-size: 12px; color: #2563eb; letter-spacing: -0.5px; }
+        .cart-item-title { font-size: 11px; color: #ffffff; padding-right: 35px; line-height: 1.4; letter-spacing: -0.5px; }
+        .cart-item-formula { font-size: 11px; color: #2563eb; letter-spacing: -0.5px; }
         
-        /* Исправленный блок калькулятора с жестким выравниванием цифр по центру */
-        .cart-control-block { display: flex; align-items: center; justify-content: center; background: #000000; border: 1px solid #27272a; border-radius: 10px; padding: 2px 6px; }
+        .cart-control-block { display: flex; align-items: center; background: #000000; border: 1px solid #27272a; border-radius: 10px; padding: 2px 6px; }
         .cart-btn-math { background: none; border: none; color: #a1a1aa; font-size: 16px; width: 26px; height: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         
-        /* Фикс: убираем стрелочки инпута, центрируем текст и расширяем поле под Extra-Bold */
-        .cart-input-value { 
-            width: 44px; 
-            background: none; 
-            border: none; 
-            color: #ffffff; 
-            text-align: center !important; 
-            font-size: 13px; 
-            padding: 0;
-            appearance: textfield;
-            -moz-appearance: textfield;
-        }
-        .cart-input-value::-webkit-outer-spin-button,
-        .cart-input-value::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
+        .cart-input-value { width: 44px; background: none; border: none; color: #ffffff; text-align: center !important; font-size: 12px; padding: 0; appearance: textfield; -moz-appearance: textfield; }
+        .cart-input-value::-webkit-outer-spin-button, .cart-input-value::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         
-        /* Нативная КРАСНАЯ кнопка удаления в рамке по образцу RAPTOR */
+        /* Красная квадратная кнопка удаления из Raptor */
         .cart-item-delete { 
             position: absolute; 
-            top: 16px; 
-            right: 16px; 
+            top: 12px; 
+            right: 12px; 
             color: #ef4444; 
-            font-size: 14px; 
+            font-size: 11px; 
             cursor: pointer; 
-            background: rgba(239, 68, 68, 0.15); 
-            border: 1px solid rgba(239, 68, 68, 0.25); 
-            width: 24px;
-            height: 24px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.15s ease;
+            background: rgba(239, 68, 68, 0.12); 
+            border: 1px solid rgba(239, 68, 68, 0.2); 
+            width: 22px; 
+            height: 22px; 
+            border-radius: 6px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            transition: all 0.15s ease; 
+            z-index: 10;
         }
-        .cart-item-delete:active {
-            background: rgba(239, 68, 68, 0.3);
-        }
+        .cart-item-delete:active { background: rgba(239, 68, 68, 0.25); }
 
         .cart-summary-box { background: #18181b; border: 1px solid #27272a; border-radius: 20px; padding: 20px; margin-top: 24px; display: flex; flex-direction: column; gap: 14px; }
-        .summary-row { display: flex; justify-content: space-between; font-size: 13px; color: #a1a1aa; }
-        .summary-total-price { font-size: 16px; color: #2563eb; letter-spacing: -0.5px; }
-        .btn-wallet-icon { background: rgba(255,255,255,0.15); width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .summary-row { display: flex; justify-content: space-between; font-size: 12px; color: #a1a1aa; }
+        .summary-total-price { font-size: 15px; color: #2563eb; letter-spacing: -0.5px; }
+                /* Красная кнопка удаления — исправлено позиционирование */
+        .cart-item-delete { 
+            position: absolute; 
+            top: 12px; 
+            right: 12px; 
+            color: #ef4444; 
+            font-size: 11px; 
+            cursor: pointer; 
+            background: rgba(239, 68, 68, 0.12); 
+            border: 1px solid rgba(239, 68, 68, 0.2); 
+            width: 22px; 
+            height: 22px; 
+            border-radius: 6px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            transition: all 0.15s ease; 
+            z-index: 10;
+        }
+        .cart-item-delete:active { background: rgba(239, 68, 68, 0.25); }
+
+        /* Иконка кошелька — убрана лишняя цифра 28 */
+        .btn-wallet-icon { 
+            background: rgba(255,255,255,0.15); 
+            width: 24px; 
+            height: 24px; 
+            border-radius: 6px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 13px; 
+        }
+
 
         /* Нижний таб-бар Telegram Mini App */
         .tab-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 420px; background: #18181b; border-top: 1px solid #27272a; display: flex; justify-content: space-around; padding: 12px 0 16px 0; z-index: 90; }
-        .nav-item { color: #71717a; font-size: 10px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; width: 33%; text-align: center; }
+        .nav-item { color: #71717a; font-size: 9px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; width: 33%; text-align: center; }
         .nav-item.active { color: #2563eb; }
         .nav-icon { font-size: 18px; }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- Нативная шапка приложения без Best Seller -->
-        <div class="header" id="appHeaderBlock">
-            <div class="logo">GayerShop</div>
-        </div>
-
+        <!-- Шапка GayerShop полностью удалена для чистоты интерфейса по вашему требованию -->
         <!-- ЭКРАН 1: ДОБРО ПОЖАЛОВАТЬ (ГЛАВНАЯ) -->
         <div id="screen_welcome" style="display: block;">
             <div style="background: #18181b; border: 1px solid #27272a; padding: 30px 20px; border-radius: 16px; text-align: center;">
-                <h2 style="font-size: 16px; color: #2563eb; letter-spacing: -0.5px;">Добро пожаловать в GayerShop! 🚀</h2>
+                <h2 style="font-size: 15px; color: #2563eb; letter-spacing: -0.5px;">Добро пожаловать в GayerShop! 🚀</h2>
                 <p style="margin: 16px 0; color: #e4e4e7; font-size: 11px; line-height: 1.6; text-align: left;">
                     Ваш надёжный проводник в мире цифровых услуг и эффективного продвижения. Мы объединили всё самое необходимое в одном удобном WebApp-приложении, чтобы вы могли развивать свои проекты в пару кликов!
                 </p>
                 <div style="background: #000000; border: 1px solid #27272a; padding: 14px; border-radius: 12px; margin-bottom: 18px; text-align: left;">
-                    <h4 style="margin: 0 0 8px 0; color: #10b981; font-size: 12px;">🌟 Наши главные преимущества:</h4>
-                    <ul style="margin: 0; padding-left: 14px; color: #a1a1aa; font-size: 11px; line-height: 1.6; list-style-type: square;">
+                    <h4 style="margin: 0 0 8px 0; color: #10b981; font-size: 11px;">🌟 Наши главные преимущества:</h4>
+                    <ul style="margin: 0; padding-left: 14px; color: #a1a1aa; font-size: 10px; line-height: 1.6; list-style-type: square;">
                         <li style="margin-bottom: 6px;"><strong style="color: #fff;">Удобный инпут:</strong> Меняйте точное количество товаров и услуг текстом или кнопками прямо в корзине.</li>
                         <li style="margin-bottom: 6px;"><strong style="color: #fff;">Прямой чат-чек:</strong> Полная спецификация заказа мгновенно перенаправляется администратору.</li>
                     </ul>
@@ -187,7 +188,6 @@
         </div>
         <!-- ЭКРАН 2: ЧЕТЫРЕХУРОВНЕВЫЙ КАТАЛОГ -->
         <div id="screen_catalog" style="display: none;">
-            <!-- Уровень 1: 4 Глобальных Раздела (Подключение твоих иконок из фото 2) -->
             <div id="catalog_level_1" style="display: flex; flex-direction: column; gap: 12px;">
                 <div class="category-row-card" onclick="openCatalogLevel2('social')">
                     <img src="icon_social.png" alt="Social">
@@ -195,7 +195,7 @@
                 </div>
                 <div class="category-row-card" onclick="openCatalogLevelFinal('ai')">
                     <img src="icon_ai.png" alt="AI">
-                    <div><h3>ИИ</h3><p>Подписки на популярный искусственный интеллект</p></div>
+                    <div><h3>ИИ нейросети</h3><p>Подписки на популярный искусственный интеллект</p></div>
                 </div>
                 <div class="category-row-card" onclick="openCatalogLevelFinal('promo')">
                     <img src="icon_promo.png" alt="Promo">
@@ -203,11 +203,10 @@
                 </div>
                 <div class="category-row-card" onclick="openCatalogLevelFinal('soft')">
                     <img src="icon_keys.png" alt="Keys">
-                    <div><h3>Ключи</h3><p>Лицензионные ключи активации Windows и ОС</p></div>
+                    <div><h3>Ключи софта</h3><p>Лицензионные ключи активации Windows и ОС</p></div>
                 </div>
             </div>
 
-            <!-- Уровень 2: Платформы Соцсетей -->
             <div id="catalog_level_2_social" style="display: none; flex-direction: column; gap: 12px;">
                 <div class="category-row-card" onclick="openCatalogLevel3('tg')">
                     <img src="telegram_logo.png" alt="TG">
@@ -223,10 +222,7 @@
                 </div>
             </div>
 
-            <!-- Уровень 3: Папки Telegram -->
             <div id="catalog_level_3_tg_folders" style="display: none; flex-direction: column; gap: 12px;"></div>
-
-            <!-- Уровень 4: Сетка Конечных Товаров -->
             <div id="catalog_level_final_products" class="grid" style="display: none;"></div>
         </div>
 
@@ -248,10 +244,10 @@
             </div>
             
             <button id="btnOrderSubmit" class="btn" style="padding: 18px; margin-top: 24px;" onclick="processCheckoutSubmit()">
-                <div class="btn-wallet-icon">💳</div>
+                <div class="btn-wallet-icon">👛</div>
                 <span id="btnOrderSubmitText">Купить — 0 ₽</span>
             </button>
-        </div>
+
 
     </div> <!-- Конец app-container -->
 
@@ -261,7 +257,7 @@
         <div class="nav-item" onclick="navigateTabBar('cart', this)"><span class="nav-icon">🛒</span><span>Корзина</span></div>
     </div>
 
-    <!-- Модальное окно калькулятора -->
+    <!-- Модалка калькулятора -->
     <div id="orderModal" class="modal">
         <div class="modal-content">
             <button onclick="closeModal()" style="position: absolute; top: 12px; right: 16px; background: none; border: none; color: #a1a1aa; font-size: 22px; cursor: pointer;">&times;</button>
@@ -283,8 +279,8 @@
                 </select> 
             </div>
 
-            <div style="font-size: 12px; color: #a1a1aa; margin-bottom: 2px;">Стоимость:</div>
-            <div id="modalPrice" style="font-size: 18px; color: #2563eb;">0 ₽</div>
+            <div style="font-size: 11px; color: #a1a1aa; margin-bottom: 2px;">Стоимость:</div>
+            <div id="modalPrice" style="font-size: 16px; color: #2563eb;">0 ₽</div>
             <button onclick="addSelectedToCartObject()" id="modalAddBtn" class="btn"><span>Добавить в корзину</span></button>
         </div>
     </div>
@@ -296,7 +292,6 @@
         let activeTargetProduct = null;
         let navigationHistoryStack = [];
 
-        // Полная база данных тарифов с сохранением путей к картинкам
         const dataProducts = {
             tg_subscribers: [
                 { id: "tg_sub_30", name: "⭐️ Telegram Подписчики [30 дней без списаний]", price: 0.067, min: 10, countable: true, img: "boostsub30d.png" },
@@ -331,16 +326,12 @@
                 { id: "vk_likes", name: "❤️ Лайки VK", price: 0.05, min: 1, countable: true, img: "vk_like.png" },
                 { id: "vk_sub", name: "👥 Подписчики VK", price: 0.11, min: 1, countable: true, img: "vk_sub.png" }
             ],
-            ai: [
-                { id: "ai_gemini", name: "🤖 GOOGLE GEMINI PRO | Подписка на 18 месяцев", price: 69.0, min: 1, countable: false, img: "gemini.png" }
-            ],
+            ai: [ { id: "ai_gemini", name: "🤖 GOOGLE GEMINI PRO | Подписка на 18 месяцев", price: 69.0, min: 1, countable: false, img: "gemini.png" } ],
             promo: [
                 { id: "p_recom", name: "🥰 📥 КАК ПОПАСТЬ В РЕКОМЕНДАЦИИ В TIKTOK", price: 15.0, min: 1, countable: false, img: "rekom.png" },
                 { id: "p_mini", name: "🔥 ТИКТОК НАКРУТКА ПАК МИНИМАЛИСТИК", price: 90.0, min: 1, countable: false, img: "minimalistic.png" }
             ],
-            soft: [
-                { id: "soft_win", name: "💻 АКТИВАЦИЯ WINDOWS 10-11 (ЛЮБАЯ!)", price: 100.0, min: 1, countable: false, img: "windows.png" }
-            ]
+            soft: [ { id: "soft_win", name: "💻 АКТИВАЦИЯ WINDOWS 10-11 (ЛЮБАЯ!)", price: 100.0, min: 1, countable: false, img: "windows.png" } ]
         };
 
         const tgFolders = [
@@ -368,178 +359,104 @@
         function navigateTabBar(screen, tabNode) {
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             tabNode.classList.add('active');
-
             document.getElementById('screen_welcome').style.display = screen === 'welcome' ? 'block' : 'none';
             document.getElementById('screen_catalog').style.display = screen === 'catalog' ? 'block' : 'none';
             document.getElementById('screen_cart').style.display = screen === 'cart' ? 'block' : 'none';
-            
             if (screen === 'catalog') {
-                navigationHistoryStack = [];
-                if (tgApp) tgApp.BackButton.hide();
-                executeSwitchCatalogDOM('1');
-            } else {
-                if (tgApp) tgApp.BackButton.hide();
-            }
+                navigationHistoryStack = []; if (tgApp) tgApp.BackButton.hide(); executeSwitchCatalogDOM('1');
+            } else { if (tgApp) tgApp.BackButton.hide(); }
             if (screen === 'cart') renderCartScreenDOM();
         }
-        function openCatalogLevel2(key) {
-            navigationHistoryStack.push({name: '1', key: null});
-            if (tgApp) tgApp.BackButton.show();
-            executeSwitchCatalogDOM('2_social');
-        }
-
-        function openCatalogLevel3(key) {
-            navigationHistoryStack.push({name: '2_social', key: null});
-            executeSwitchCatalogDOM('3_tg_folders');
-        }
-
+        function openCatalogLevel2(key) { navigationHistoryStack.push({name: '1', key: null}); if (tgApp) tgApp.BackButton.show(); executeSwitchCatalogDOM('2_social'); }
+        function openCatalogLevel3(key) { navigationHistoryStack.push({name: '2_social', key: null}); executeSwitchCatalogDOM('3_tg_folders'); }
         function openCatalogLevelFinal(keyData) {
-            if (['ai', 'promo', 'soft'].includes(keyData)) {
-                navigationHistoryStack.push({name: '1', key: null});
-            } else {
-                navigationHistoryStack.push({name: (activeTargetProduct === 'tg' ? '3_tg_folders' : '2_social'), key: activeTargetProduct});
-            }
-            if (tgApp) tgApp.BackButton.show();
-            executeSwitchCatalogDOM('final_products', keyData);
+            if (['ai', 'promo', 'soft'].includes(keyData)) navigationHistoryStack.push({name: '1', key: null});
+            else navigationHistoryStack.push({name: (activeTargetProduct === 'tg' ? '3_tg_folders' : '2_social'), key: activeTargetProduct});
+            if (tgApp) tgApp.BackButton.show(); executeSwitchCatalogDOM('final_products', keyData);
         }
 
         function executeSwitchCatalogDOM(levelName, keyData = null) {
-            const lvl1 = document.getElementById('catalog_level_1');
-            const lvl2 = document.getElementById('catalog_level_2_social');
-            const lvl3 = document.getElementById('catalog_level_3_tg_folders');
-            const lvlFinal = document.getElementById('catalog_level_final_products');
-
-            lvl1.style.display = levelName === '1' ? 'flex' : 'none';
-            lvl2.style.display = levelName === '2_social' ? 'flex' : 'none';
-            lvl3.style.display = levelName === '3_tg_folders' ? 'flex' : 'none';
-            lvlFinal.style.display = levelName === 'final_products' ? 'grid' : 'none';
+            const lvl1 = document.getElementById('catalog_level_1'); const lvl2 = document.getElementById('catalog_level_2_social');
+            const lvl3 = document.getElementById('catalog_level_3_tg_folders'); const lvlFinal = document.getElementById('catalog_level_final_products');
+            lvl1.style.display = levelName === '1' ? 'flex' : 'none'; lvl2.style.display = levelName === '2_social' ? 'flex' : 'none';
+            lvl3.style.display = levelName === '3_tg_folders' ? 'flex' : 'none'; lvlFinal.style.display = levelName === 'final_products' ? 'grid' : 'none';
 
             if (levelName === '2_social') activeTargetProduct = 'social';
             if (levelName === '3_tg_folders') {
-                activeTargetProduct = 'tg';
-                lvl3.innerHTML = '';
+                activeTargetProduct = 'tg'; lvl3.innerHTML = '';
                 tgFolders.forEach(folder => {
-                    const block = document.createElement('div');
-                    block.className = 'card';
-                    block.style = "padding: 18px; flex-direction: row; justify-content: space-between; align-items: center; font-size: 13px; border: 1px solid #2c2c2e; background: #1c1c1e;";
+                    const block = document.createElement('div'); block.className = 'card';
+                    block.style = "padding: 18px; flex-direction: row; justify-content: space-between; align-items: center; font-size: 12px; border: 1px solid #2c2c2e; background: #1c1c1e;";
                     block.innerHTML = `<span>${folder.name}</span> <span style="color: #52525b;">→</span>`;
-                    block.onclick = () => {
-                        if (folder.id === 'tg_spamblock') openOrderCalculationModal(dataProducts.tg_spamblock);
-                        else openCatalogLevelFinal(folder.id);
-                    };
+                    block.onclick = () => { if (folder.id === 'tg_spamblock') openOrderCalculationModal(dataProducts.tg_spamblock); else openCatalogLevelFinal(folder.id); };
                     lvl3.appendChild(block);
                 });
             }
-
             if (levelName === 'final_products') {
-                lvlFinal.innerHTML = '';
-                let targetArray = dataProducts[keyData] || [];
+                lvlFinal.innerHTML = ''; let targetArray = dataProducts[keyData] || [];
                 targetArray.forEach(prod => {
-                    const itemCard = document.createElement('div');
-                    itemCard.className = 'card';
-                    itemCard.innerHTML = `
-                        <img src="${prod.img}" alt="Preview">
-                        <div class="card-info">
-                            <div class="title">${prod.name}</div>
-                            <div class="price-row">
-                                <div class="price">${prod.price} ₽${prod.countable ? ' / шт.' : ''}</div>
-                                <div class="add-badge">+</div>
-                            </div>
-                        </div>
-                    `;
-                    itemCard.onclick = () => openOrderCalculationModal(prod);
-                    lvlFinal.appendChild(itemCard);
+                    const itemCard = document.createElement('div'); itemCard.className = 'card';
+                    itemCard.innerHTML = `<img src="${prod.img}" alt="Preview"><div class="card-info"><div class="title">${prod.name}</div><div class="price-row"><div class="price">${prod.price} ₽${prod.countable ? ' / шт.' : ''}</div><div class="add-badge">+</div></div></div>`;
+                    itemCard.onclick = () => openOrderCalculationModal(prod); lvlFinal.appendChild(itemCard);
                 });
             }
         }
 
         function openOrderCalculationModal(productObj) {
-            activeTargetProduct = productObj;
-            document.getElementById('modalTitle').innerText = productObj.name;
-            const inputField = document.getElementById('itemQuantity');
-            const emojiSel = document.getElementById('emojiSelector');
+            activeTargetProduct = productObj; document.getElementById('modalTitle').innerText = productObj.name;
+            const inputField = document.getElementById('itemQuantity'); const emojiSel = document.getElementById('emojiSelector');
             emojiSel.style.display = productObj.hasEmojiSelect ? 'block' : 'none';
-            
-            if (productObj.countable) {
-                document.getElementById('quantityBlock').style.display = 'block';
-                inputField.value = productObj.min;
-            } else {
-                document.getElementById('quantityBlock').style.display = 'none';
-                inputField.value = 1;
-            }
-            calculateModalLiveTotal();
-            document.getElementById('orderModal').style.display = 'flex';
+            if (productObj.countable) { document.getElementById('quantityBlock').style.display = 'block'; inputField.value = productObj.min; }
+            else { document.getElementById('quantityBlock').style.display = 'none'; inputField.value = 1; }
+            calculateModalLiveTotal(); document.getElementById('orderModal').style.display = 'flex';
         }
 
         function calculateModalLiveTotal() {
             if (!activeTargetProduct) return;
-            const inputField = document.getElementById('itemQuantity');
-            let quantity = parseInt(inputField.value) || 0;
-            const errBox = document.getElementById('errorMsg');
-            const addBtn = document.getElementById('modalAddBtn');
-
-            if (activeTargetProduct.countable && quantity < activeTargetProduct.min) {
-                errBox.innerText = `Минимальный заказ: ${activeTargetProduct.min} шт.`;
-                errBox.style.display = 'block';
-                addBtn.disabled = true;
-            } else {
-                errBox.style.display = 'none';
-                addBtn.disabled = false;
-            }
-            let sum = quantity * activeTargetProduct.price;
-            document.getElementById('modalPrice').innerText = (sum >= 1 ? sum.toFixed(2) : sum.toFixed(4)) + ' ₽';
+            const inputField = document.getElementById('itemQuantity'); let quantity = parseInt(inputField.value) || 0;
+            const errBox = document.getElementById('errorMsg'); const addBtn = document.getElementById('modalAddBtn');
+            if (activeTargetProduct.countable && quantity < activeTargetProduct.min) { errBox.innerText = `Минимальный заказ: ${activeTargetProduct.min} шт.`; errBox.style.display = 'block'; addBtn.disabled = true; }
+            else { errBox.style.display = 'none'; addBtn.disabled = false; }
+            let sum = quantity * activeTargetProduct.price; document.getElementById('modalPrice').innerText = (sum >= 1 ? sum.toFixed(2) : sum.toFixed(4)) + ' ₽';
         }
-
-        function closeModal() {
-            document.getElementById('orderModal').style.display = 'none';
-            activeTargetProduct = null;
-        }
-                        function addSelectedToCartObject() {
+        function closeModal() { document.getElementById('orderModal').style.display = 'none'; activeTargetProduct = null; }
+        function addSelectedToCartObject() {
             if (!activeTargetProduct) return;
             const quantity = parseInt(document.getElementById('itemQuantity').value) || 1;
-            const emojiSel = document.getElementById('emojiSelector');
+            const emojiSel = document.getElementById('emojiSelector'); 
             let chosenEmoji = activeTargetProduct.hasEmojiSelect ? emojiSel.value : null;
+            
             let existingItem = cartState.find(item => item.id === activeTargetProduct.id && item.emoji === chosenEmoji);
             
             if (existingItem) {
-                existingItem.qty = activeTargetProduct.countable ? (existingItem.qty + quantity) : 1;
-            } else {
-                cartState.push({
-                    id: activeTargetProduct.id,
-                    name: activeTargetProduct.name,
-                    price: activeTargetProduct.price,
-                    img: activeTargetProduct.img,
-                    qty: quantity,
-                    countable: activeTargetProduct.countable,
-                    min: activeTargetProduct.min,
-                    emoji: chosenEmoji
-                });
+                // ИСПРАВЛЕНО: Если товар уже в корзине, просто плюсуем выбранное кол-во (или +1 для непоштучных)
+                existingItem.qty += activeTargetProduct.countable ? quantity : 1; 
+            } else { 
+                cartState.push({ 
+                    id: activeTargetProduct.id, 
+                    name: activeTargetProduct.name, 
+                    price: activeTargetProduct.price, 
+                    img: activeTargetProduct.img, 
+                    qty: quantity, 
+                    countable: activeTargetProduct.countable, 
+                    min: activeTargetProduct.min, 
+                    emoji: chosenEmoji 
+                }); 
             }
-            saveCartToLocalStorage();
-            closeModal();
+            saveCartToLocalStorage(); 
+            closeModal(); 
             if (tgApp && tgApp.HapticFeedback) tgApp.HapticFeedback.notificationOccurred("success");
         }
-
         function renderCartScreenDOM() {
-            const container = document.getElementById('cartItemsListContainer');
-            container.innerHTML = '';
-            if (cartState.length === 0) {
-                container.innerHTML = '<div style="text-align:center; padding:40px 10px; color:#a1a1aa; font-size:12px;">Ваша корзина пуста 🛒</div>';
-                document.getElementById('cartSummaryBlock').style.display = 'none';
-                document.getElementById('btnOrderSubmit').style.display = 'none';
-                return;
-            }
-            document.getElementById('cartSummaryBlock').style.display = 'block';
-            document.getElementById('btnOrderSubmit').style.display = 'flex';
+            const container = document.getElementById('cartItemsListContainer'); container.innerHTML = '';
+            if (cartState.length === 0) { container.innerHTML = '<div style="text-align:center; padding:40px 10px; color:#a1a1aa; font-size:12px;">Ваша корзина пуста 🛒</div>'; document.getElementById('cartSummaryBlock').style.display = 'none'; document.getElementById('btnOrderSubmit').style.display = 'none'; return; }
+            document.getElementById('cartSummaryBlock').style.display = 'block'; document.getElementById('btnOrderSubmit').style.display = 'flex';
             let totalItems = 0; let finalCostSum = 0;
 
             cartState.forEach((item, index) => {
-                let currentItemCost = item.qty * item.price;
-                totalItems += item.qty; finalCostSum += currentItemCost;
-                const rowBlock = document.createElement('div');
-                rowBlock.className = 'cart-item';
-                let displayTitle = item.name;
-                if (item.emoji) displayTitle += ` (Эмодзи: ${item.emoji})`;
+                let currentItemCost = item.qty * item.price; totalItems += item.qty; finalCostSum += currentItemCost;
+                const rowBlock = document.createElement('div'); rowBlock.className = 'cart-item';
+                let displayTitle = item.name; if (item.emoji) displayTitle += ` (Эмодзи: ${item.emoji})`;
 
                 rowBlock.innerHTML = `
                     <img src="${item.img}" class="cart-item-img" alt="Item">
@@ -562,56 +479,76 @@
             document.getElementById('btnOrderSubmitText').innerText = `Купить — ${formattedSum}`;
         }
 
-        function changeCartItemQuantityMath(index, step) {
-            let item = cartState[index];
-            if (!item.countable) return;
-            item.qty += step;
-            if (item.qty <= 0 || (item.qty < item.min && step < 0)) cartState.splice(index, 1);
-            saveCartToLocalStorage();
-        }
-
-        function changeCartItemQuantityInput(index, inputNode) {
-            let item = cartState[index];
-            let rawValue = parseInt(inputNode.value);
-            if (isNaN(rawValue) || rawValue <= 0) {
-                cartState.splice(index, 1);
-                saveCartToLocalStorage();
-                return;
+                function changeCartItemQuantityInput(index, inputNode) {
+            let item = cartState[index]; 
+            
+            // Удаляем любые введенные буквы или спецсимволы, оставляя только чистые цифры
+            let cleanValue = inputNode.value.replace(/\D/g, '');
+            inputNode.value = cleanValue;
+            
+            let rawValue = parseInt(cleanValue);
+            
+            // Если поле пустое, не прерываем ввод пользователя
+            if (isNaN(rawValue) || rawValue <= 0) { 
+                return; 
             }
-            item.qty = rawValue;
-            saveCartToLocalStorage();
+            
+            // Защита от заказа меньше минимального лимита для поштучных позиций
+            if (item.countable && rawValue < item.min) {
+                item.qty = item.min;
+                inputNode.value = item.min;
+            } else {
+                item.qty = rawValue;
+            }
+            
+            // Сохраняем изменения в локальной памяти
+            localStorage.setItem('gayer_cart_session', JSON.stringify(cartState));
+            renderCartScreenDOM();
+            
+            // Теперь setSelectionRange сработает идеально, так как тип инпута станет текстовым
+            const allInputs = document.querySelectorAll('.cart-input-value');
+            if (allInputs[index]) {
+                allInputs[index].focus();
+                const textLength = allInputs[index].value.length;
+                allInputs[index].setSelectionRange(textLength, textLength);
+            }
         }
 
+        
         function removeCartItemEntirely(index) { cartState.splice(index, 1); saveCartToLocalStorage(); }
         function clearEntireCart() { cartState = []; saveCartToLocalStorage(); }
 
+        // Обновленная безотказная логика: Копирование чека в буфер обмена + мгновенный редирект к админу
         function processCheckoutSubmit() {
             if (cartState.length === 0) return;
-            let isAnyInputEmpty = false;
-            document.querySelectorAll('.cart-input-value').forEach(input => {
-                if(input.value === "" || parseInt(input.value) <= 0) isAnyInputEmpty = true;
-            });
-            if(isAnyInputEmpty) return;
-
             let username = tgApp?.initDataUnsafe?.user?.username ? `@${tgApp.initDataUnsafe.user.username}` : 'Покупатель';
             let userId = tgApp?.initDataUnsafe?.user?.id || 'Не определен';
-            let checkTextMessage = `📦 **Новый заказ от ${username}**\n\n`;
-            let finalSum = 0;
+            let checkTextMessage = `📦 **Новый заказ от ${username}**\n\n`; let finalSum = 0;
 
             cartState.forEach(item => {
                 let cost = item.qty * item.price; finalSum += cost;
                 let titleString = item.name; if (item.emoji) titleString += ` (Эмодзи: ${item.emoji})`;
                 checkTextMessage += `• **${titleString}**\n  Количество: ${item.qty} шт. — ${(cost >= 1 ? cost.toFixed(2) : cost.toFixed(4))} ₽\n\n`;
             });
-            checkTextMessage += `💰 **Итого к оплате: ${(finalSum >= 1 ? finalSum.toFixed(2) : finalSum.toFixed(4))} ₽**\n`;
-            checkTextMessage += `🆔 ID пользователя: \`${userId}\`\n`;
+            checkTextMessage += `💰 **Итого к оплате: ${(finalSum >= 1 ? finalSum.toFixed(2) : finalSum.toFixed(4))} ₽**\n🆔 ID пользователя: \`${userId}\`\n`;
 
-            if (tgApp && tgApp.sendData) {
-                tgApp.sendData(checkTextMessage);
-                tgApp.close();
+            // Решение проблемы отправки: принудительно копируем текст в буфер обмена устройства
+            const tempTextArea = document.createElement("textarea");
+            tempTextArea.value = checkTextMessage;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempTextArea);
+
+            // ВСТАВЛЕННЫЙ НОВЫЙ БЛОК РЕДИРЕКТА:
+            if (tgApp && tgApp.showAlert) {
+                tgApp.showAlert("🛒 Текст заказа автоматически скопирован в буфер обмена! Перенаправляем в приложение к администратору — просто зажмите поле ввода и нажмите 'Вставить'.", () => {
+                    window.location.href = "tg://resolve?domain=Smeshnoy_Ny_Tema";
+                    setTimeout(() => { tgApp.close(); }, 500);
+                });
             } else {
-                alert("Заказ оформлен!");
-                window.open(`https://t.me/Smeshnoy_Ny_Tema`, '_blank');
+                alert("Заказ скопирован в буфер обмена! Переходим в Telegram к администратору.");
+                window.location.href = "tg://resolve?domain=Smeshnoy_Ny_Tema";
             }
         }
     </script>
