@@ -448,9 +448,19 @@
             if (tgApp && tgApp.HapticFeedback) tgApp.HapticFeedback.notificationOccurred("success");
         }
         function renderCartScreenDOM() {
-            const container = document.getElementById('cartItemsListContainer'); container.innerHTML = '';
-            if (cartState.length === 0) { container.innerHTML = '<div style="text-align:center; padding:40px 10px; color:#a1a1aa; font-size:12px;">Ваша корзина пуста 🛒</div>'; document.getElementById('cartSummaryBlock').style.display = 'none'; document.getElementById('btnOrderSubmit').style.display = 'none'; return; }
-            document.getElementById('cartSummaryBlock').style.display = 'block'; document.getElementById('btnOrderSubmit').style.display = 'flex';
+            const container = document.getElementById('cartItemsListContainer'); 
+            if (!container) return;
+            container.innerHTML = '';
+            
+            if (cartState.length === 0) { 
+                container.innerHTML = '<div style="text-align:center; padding:40px 10px; color:#a1a1aa; font-size:12px;">Ваша корзина пуста 🛒</div>'; 
+                document.getElementById('cartSummaryBlock').style.display = 'none'; 
+                document.getElementById('btnOrderSubmit').style.display = 'none'; 
+                return; 
+            }
+            
+            document.getElementById('cartSummaryBlock').style.display = 'block'; 
+            document.getElementById('btnOrderSubmit').style.display = 'flex';
             let totalItems = 0; let finalCostSum = 0;
 
             cartState.forEach((item, index) => {
@@ -458,6 +468,7 @@
                 const rowBlock = document.createElement('div'); rowBlock.className = 'cart-item';
                 let displayTitle = item.name; if (item.emoji) displayTitle += ` (Эмодзи: ${item.emoji})`;
 
+                // ЖЕСТКАЯ ПРИВЯЗКА: функции changeCartItemQuantityMath передаются строго текущий индекс и шаг
                 rowBlock.innerHTML = `
                     <img src="${item.img}" class="cart-item-img" alt="Item">
                     <div class="cart-item-details">
@@ -466,51 +477,40 @@
                     </div>
                     <div class="cart-control-block">
                         <button class="cart-btn-math" onclick="changeCartItemQuantityMath(${index}, -1)">-</button>
-                        <input type="number" class="cart-input-value" value="${item.qty}" oninput="changeCartItemQuantityInput(${index}, this)">
+                        <input type="text" inputmode="numeric" class="cart-input-value" value="${item.qty}" oninput="changeCartItemQuantityInput(${index}, this)" onblur="if(this.value===''||parseInt(this.value)<=0){removeCartItemEntirely(${index})}">
                         <button class="cart-btn-math" onclick="changeCartItemQuantityMath(${index}, 1)">+</button>
                     </div>
                     <button class="cart-item-delete" onclick="removeCartItemEntirely(${index})">&#10005;</button>
                 `;
                 container.appendChild(rowBlock);
             });
+            
             document.getElementById('summaryTotalItemsCount').innerText = totalItems + ' шт.';
             let formattedSum = (finalCostSum >= 1 ? finalCostSum.toFixed(2) : finalCostSum.toFixed(4)) + ' ₽';
             document.getElementById('summaryFinalCost').innerText = formattedSum;
             document.getElementById('btnOrderSubmitText').innerText = `Купить — ${formattedSum}`;
         }
 
-                function changeCartItemQuantityInput(index, inputNode) {
+
+            function changeCartItemQuantityMath(index, step) {
             let item = cartState[index]; 
+            if (!item) return;
             
-            // Удаляем любые введенные буквы или спецсимволы, оставляя только чистые цифры
-            let cleanValue = inputNode.value.replace(/\D/g, '');
-            inputNode.value = cleanValue;
+            // Прямое изменение количества
+            item.qty = (parseInt(item.qty) || 0) + step;
             
-            let rawValue = parseInt(cleanValue);
-            
-            // Если поле пустое, не прерываем ввод пользователя
-            if (isNaN(rawValue) || rawValue <= 0) { 
-                return; 
+            // Если ушли в ноль или ниже минималки поштучного товара при нажатии на минус — удаляем строку
+            if (item.qty <= 0 || (item.countable && item.qty < item.min && step < 0)) {
+                cartState.splice(index, 1);
             }
             
-            // Защита от заказа меньше минимального лимита для поштучных позиций
-            if (item.countable && rawValue < item.min) {
-                item.qty = item.min;
-                inputNode.value = item.min;
-            } else {
-                item.qty = rawValue;
-            }
-            
-            // Сохраняем изменения в локальной памяти
+            // Важнейший шаг: принудительно пишем в локальное хранилище и перерисовываем DOM-дерево
             localStorage.setItem('gayer_cart_session', JSON.stringify(cartState));
             renderCartScreenDOM();
             
-            // Теперь setSelectionRange сработает идеально, так как тип инпута станет текстовым
-            const allInputs = document.querySelectorAll('.cart-input-value');
-            if (allInputs[index]) {
-                allInputs[index].focus();
-                const textLength = allInputs[index].value.length;
-                allInputs[index].setSelectionRange(textLength, textLength);
+            // Активируем легкую вибрацию в Telegram при клике на плюс/минус для нативности
+            if (tgApp && tgApp.HapticFeedback) {
+                tgApp.HapticFeedback.impactOccurred("light");
             }
         }
 
@@ -519,6 +519,7 @@
         function clearEntireCart() { cartState = []; saveCartToLocalStorage(); }
 
         // Обновленная безотказная логика: Копирование чека в буфер обмена + мгновенный редирект к админу
+        // Обновленная и безопасная логика: Копирование чека + гарантированный редирект через нативный протокол
         function processCheckoutSubmit() {
             if (cartState.length === 0) return;
             let username = tgApp?.initDataUnsafe?.user?.username ? `@${tgApp.initDataUnsafe.user.username}` : 'Покупатель';
@@ -532,7 +533,7 @@
             });
             checkTextMessage += `💰 **Итого к оплате: ${(finalSum >= 1 ? finalSum.toFixed(2) : finalSum.toFixed(4))} ₽**\n🆔 ID пользователя: \`${userId}\`\n`;
 
-            // Решение проблемы отправки: принудительно копируем текст в буфер обмена устройства
+            // Принудительное копирование текста заказа в буфер обмена устройства
             const tempTextArea = document.createElement("textarea");
             tempTextArea.value = checkTextMessage;
             document.body.appendChild(tempTextArea);
@@ -540,17 +541,19 @@
             document.execCommand("copy");
             document.body.removeChild(tempTextArea);
 
-            // ВСТАВЛЕННЫЙ НОВЫЙ БЛОК РЕДИРЕКТА:
+            // ИСПРАВЛЕНИЕ: Прямой редирект по клику на кнопку внутри нативного окна Telegram Alert
             if (tgApp && tgApp.showAlert) {
-                tgApp.showAlert("🛒 Текст заказа автоматически скопирован в буфер обмена! Перенаправляем в приложение к администратору — просто зажмите поле ввода и нажмите 'Вставить'.", () => {
-                    window.location.href = "tg://resolve?domain=Smeshnoy_Ny_Tema";
-                    setTimeout(() => { tgApp.close(); }, 500);
+                tgApp.showAlert("🛒 Текст заказа автоматически скопирован в буфер обмена! Нажмите 'ОК' для перехода в чат к администратору, зажмите поле ввода и выберите 'Вставить'.", () => {
+                    // Используем универсальную веб-ссылку t.me, которая внутри Telegram всегда открывает нативный чат
+                    window.open("https://t.me/Smeshnoy_Ny_Tema", "_blank");
+                    setTimeout(() => { tgApp.close(); }, 300);
                 });
             } else {
                 alert("Заказ скопирован в буфер обмена! Переходим в Telegram к администратору.");
-                window.location.href = "tg://resolve?domain=Smeshnoy_Ny_Tema";
+                window.open("https://t.me/Smeshnoy_Ny_Tema", "_blank");
             }
         }
     </script>
 </body>
 </html>
+
