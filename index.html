@@ -5,9 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GayerShop</title>
     <script src="https://telegram.org"></script>
+    <!-- Принудительная предзагрузка Red Collar и Manrope напрямую с серверов Google -->
+    <link rel="preload" href="https://gstatic.com" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://gstatic.com" as="font" type="font/woff2" crossorigin>
+
     <style>
-        /* Принудительный жесткий импорт шрифта Unbounded для обхода блокировок Telegram Mini App */
-        @import url('https://googleapis.com');
+        /* 1. Массивный шрифт Red Collar для заголовков, кнопок и цен */
+        @font-face {
+            font-family: 'Red Collar';
+            font-style: normal;
+            font-weight: 800;
+            font-display: swap; /* Позволяет тексту отобразиться сразу, а затем плавно сменить шрифт на красивый */
+            src: url('https://gstatic.com') format('woff2');
+        }
+
+        /* 2. Премиальный округлый шрифт Manrope для названий товаров и описаний */
+        @font-face {
+            font-family: 'Manrope';
+            font-style: normal;
+            font-weight: 800;
+            font-display: swap;
+            src: url('https://gstatic.com') format('woff2');
+        }
+
+        /* Кнопка Назад внутри каталога */
+        .catalog-back-btn {
+            display: none; /* По умолчанию скрыта на главном уровне */
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+            background: #18181b;
+            color: #a1a1aa;
+            border: 1px solid #27272a;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 11px;
+            cursor: pointer;
+            margin-bottom: 16px;
+            transition: all 0.15s ease;
+        }
+        .catalog-back-btn:active {
+            background: #27272a;
+            color: #ffffff;
+        }
+
+        /* БАЗОВЫЙ ШРИФТ ДЛЯ ВСЕГО САЙТА: Задаем Manrope, а если он качается — красивый системный */
+        body, input, select, div, span, p, li, textarea { 
+            font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important; 
+            font-weight: 800 !important;
+        }
+
+        /* АКЦЕНТЫ: Важные элементы переводим на агрессивный Red Collar */
+        h2, h3, h4, strong, .price, .btn, .cart-clear-btn, .cart-item-formula, .summary-total-price {
+            font-family: 'Red Collar', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+        }
+
+        /* Дальше у вас в коде идут остальные стили приложения (* { ... }, .grid { ... } и т.д.) */
 
         /* Полный сброс отступов */
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
@@ -40,27 +93,26 @@
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
 
         /* Крупные нативные плитки меню категорий по образцу RAPTOR */
-        .category-row-card { 
+           /* Иконки категорий */
+        .category-row-card img { 
+            border: none; 
+            border-radius: 0;
+            display: block;
+        }
+        .category-row-card:active { background: #27272a; }
+        
+        /* Иконки категорий из фото 2 */
+             .category-row-card { 
             background: #18181b; 
             border-radius: 16px; 
             border: 1px solid #27272a; 
             padding: 20px; 
             cursor: pointer; 
             display: flex; 
-            align-items: center; 
-            gap: 16px; 
+            align-items: center; /* ИСПРАВЛЕНО: выравнивает иконку и текст строго по центру друг друга */
+            gap: 20px; /* Немного увеличили отступ между иконкой и текстом, чтобы картинка 128px не прилипала */
             transition: background 0.15s ease; 
             margin-bottom: 12px; 
-        }
-        .category-row-card:active { background: #27272a; }
-        
-        /* Иконки категорий из фото 2 */
-        .category-row-card img { 
-            width: 44px; 
-            height: 44px; 
-            object-fit: contain; 
-            border: none; 
-            border-radius: 0;
         }
         
         .category-row-card h3 { font-size: 14px; color: #ffffff; letter-spacing: -0.5px; }
@@ -181,52 +233,154 @@
 
 
         /* Нижний таб-бар Telegram Mini App */
-        .tab-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 420px; background: #18181b; border-top: 1px solid #27272a; display: flex; justify-content: space-around; padding: 12px 0 16px 0; z-index: 90; }
-        .nav-item { color: #71717a; font-size: 9px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; width: 33%; text-align: center; }
-        .nav-item.active { color: #2563eb; }
-        .nav-icon { font-size: 18px; }
+       .tab-bar { 
+            position: fixed; 
+            bottom: 0; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            width: 100%; 
+            max-width: 420px; 
+            background: #18181b; 
+            border-top: 1px solid #27272a; 
+            display: flex; 
+            justify-content: space-around; 
+            padding: 10px 0 14px 0; 
+            z-index: 90; 
+        }
+        
+        .nav-item { 
+            color: #71717a; 
+            font-size: 9px; 
+            cursor: pointer; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 6px; /* Отступ между иконкой и текстом */
+            text-decoration: none; 
+            width: 33%; 
+            text-align: center; 
+            transition: color 0.15s ease;
+        }
+        
+        /* Активное состояние кнопки (применяем цвет и к тексту, и к иконке через фильтр) */
+        .nav-item.active { 
+            color: #2563eb; 
+        }
+        
+        /* Стили для PNG-иконок в таб-баре вместо эмодзи */
+        .nav-icon-img { 
+            width: 22px; 
+            height: 22px; 
+            object-fit: contain;
+            opacity: 0.5; /* По умолчанию иконки слегка приглушены */
+            transition: opacity 0.15s ease, filter 0.15s ease;
+        }
+        
+        /* Подсветка иконки активной вкладки ярким синим цветом */
+        .nav-item.active .nav-icon-img { 
+            opacity: 1; 
+            filter: drop-shadow(0px 0px 4px rgba(37, 99, 235, 0.4));
+        }
     </style>
 </head>
 <body>
     <div class="app-container">
         <!-- Шапка GayerShop полностью удалена для чистоты интерфейса по вашему требованию -->
         <!-- ЭКРАН 1: ДОБРО ПОЖАЛОВАТЬ (ГЛАВНАЯ) -->
+        <!-- ЭКРАН 1: ДОБРО ПОЖАЛОВАТЬ (ГЛАВНАЯ) -->
         <div id="screen_welcome" style="display: block;">
-            <div style="background: #18181b; border: 1px solid #27272a; padding: 30px 20px; border-radius: 16px; text-align: center;">
-                <h2 style="font-size: 15px; color: #2563eb; letter-spacing: -0.5px;">Добро пожаловать в GayerShop! 🚀</h2>
-                <p style="margin: 16px 0; color: #e4e4e7; font-size: 11px; line-height: 1.6; text-align: left;">
-                    Ваш надёжный проводник в мире цифровых услуг и эффективного продвижения. Мы объединили всё самое необходимое в одном удобном WebApp-приложении, чтобы вы могли развивать свои проекты в пару кликов!
+            <div style="background: #18181b; border: 1px solid #27272a; padding: 24px 16px; border-radius: 16px; text-align: center;">
+                <h2 style="font-size: 16px; color: #2563eb; letter-spacing: -0.5px; margin-bottom: 12px;">Добро пожаловать в GayerShop! 🚀</h2>
+                
+                <p style="margin-bottom: 16px; color: #e4e4e7; font-size: 11px; line-height: 1.6; text-align: left;">
+                    Ваш надёжный проводник в мире цифровых услуг и эффективного продвижения. Мы объединили всё самое необходимое в одном удобном WebApp-приложении, чтобы вы могли развивать свои проекты и автоматизировать рутину в пару кликов!
                 </p>
-                <div style="background: #000000; border: 1px solid #27272a; padding: 14px; border-radius: 12px; margin-bottom: 18px; text-align: left;">
-                    <h4 style="margin: 0 0 8px 0; color: #10b981; font-size: 11px;">🌟 Наши главные преимущества:</h4>
+
+                <!-- Блок 1: Преимущества -->
+                <div style="background: #000000; border: 1px solid #27272a; padding: 14px; border-radius: 12px; margin-bottom: 12px; text-align: left;">
+                    <h4 style="margin: 0 0 8px 0; color: #10b981; font-size: 11px;">🌟 Наши преимущества:</h4>
                     <ul style="margin: 0; padding-left: 14px; color: #a1a1aa; font-size: 10px; line-height: 1.6; list-style-type: square;">
-                        <li style="margin-bottom: 6px;"><strong style="color: #fff;">Удобный инпут:</strong> Меняйте точное количество товаров и услуг текстом или кнопками прямо в корзине.</li>
-                        <li style="margin-bottom: 6px;"><strong style="color: #fff;">Прямой чат-чек:</strong> Полная спецификация заказа мгновенно перенаправляется администратору.</li>
+                        <li style="margin-bottom: 6px;"><strong style="color: #fff;">Удобный инпут:</strong> Меняйте точное количество товаров текстом или кнопками прямо в корзине.</li>
+                        <li style="margin-bottom: 6px;"><strong style="color: #fff;">Умная корзина:</strong> Автоматический расчет скидок и лимитов для каждой позиции в реальном времени.</li>
+                        <li style="margin-bottom: 0;"><strong style="color: #fff;">Быстрый чек:</strong> Безопасное ручное копирование спецификации заказа без багов и зависаний WebView.</li>
                     </ul>
                 </div>
-                <button class="btn" onclick="document.getElementById('nav_catalog_btn').click()"><span>Перейти в каталог →</span></button>
+
+                <!-- Блок 2: Как сделать заказ (Новый) -->
+                <div style="background: #000000; border: 1px solid #27272a; padding: 14px; border-radius: 12px; margin-bottom: 12px; text-align: left;">
+                    <h4 style="margin: 0 0 8px 0; color: #3b82f6; font-size: 11px;">📦 Как оформить заказ:</h4>
+                    <ol style="margin: 0; padding-left: 14px; color: #a1a1aa; font-size: 10px; line-height: 1.6;">
+                        <li style="margin-bottom: 4px;"><span style="color: #fff;">Выбирайте</span> нужные услуги и подписки в разделе «Каталог».</li>
+                        <li style="margin-bottom: 4px;"><span style="color: #fff;">Настраивайте</span> точное количество в калькуляторе товара.</li>
+                        <li style="margin-bottom: 4px;"><span style="color: #fff;">Копируйте</span> сгенерированный чек в один клик внутри корзины.</li>
+                        <li style="margin-bottom: 0;"><span style="color: #fff;">Отправляйте</span> скопированный текст нашему нативному администратору.</li>
+                    </ol>
+                </div>
+
+                <!-- Блок 3: Гарантии и поддержка (Новый) -->
+                <div style="background: #000000; border: 1px solid #27272a; padding: 14px; border-radius: 12px; margin-bottom: 16px; text-align: left;">
+                    <h4 style="margin: 0 0 6px 0; color: #f59e0b; font-size: 11px;">🛡️ Гарантия качества:</h4>
+                    <p style="color: #a1a1aa; font-size: 10px; line-height: 1.5; margin-bottom: 6px;">
+                        Все цифровые товары и ключи активации проходят строгую предварительную валидацию перед выдачей.
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #27272a; padding-top: 6px; margin-top: 6px; font-size: 9px; color: #71717a;">
+                        <span>🕒 Поддержка: 24/7</span>
+                        <span>⚡ Среднее время выдачи: 5-15 мин</span>
+                    </div>
+                </div>
+
+                <button class="btn" style="margin-top: 0;" onclick="document.getElementById('nav_catalog_btn').click()">
+                    <span>Перейти в каталог →</span>
+                </button>
             </div>
         </div>
         <!-- ЭКРАН 2: ЧЕТЫРЕХУРОВНЕВЫЙ КАТАЛОГ -->
         <div id="screen_catalog" style="display: none;">
-            <div id="catalog_level_1" style="display: flex; flex-direction: column; gap: 12px;">
-                <div class="category-row-card" onclick="openCatalogLevel2('social')">
-                    <img src="icon_social.png" alt="Social">
-                    <div><h3>Соцсети</h3><p>Продвижение Telegram, TikTok, ВКонтакте</p></div>
-                </div>
-                <div class="category-row-card" onclick="openCatalogLevelFinal('ai')">
-                    <img src="icon_ai.png" alt="AI">
-                    <div><h3>ИИ нейросети</h3><p>Подписки на популярный искусственный интеллект</p></div>
-                </div>
-                <div class="category-row-card" onclick="openCatalogLevelFinal('promo')">
-                    <img src="icon_promo.png" alt="Promo">
-                    <div><h3>Продвижение</h3><p>Готовые гайды, мануалы и паки продвижения</p></div>
-                </div>
-                <div class="category-row-card" onclick="openCatalogLevelFinal('soft')">
-                    <img src="icon_keys.png" alt="Keys">
-                    <div><h3>Ключи софта</h3><p>Лицензионные ключи активации Windows и ОС</p></div>
-                </div>
+            
+            <!-- ВСТАВИТЬ СЮДА: Наша новая кнопка возврата -->
+            <div id="customCatalogBackBtn" class="catalog-back-btn" onclick="executeCatalogBackNavigation()">
+                <span>← Назад</span>
             </div>
+                       <!-- ЭКРАН 2: КАТАЛОГ УРОВЕНЬ 1 (ИСПРАВЛЕННЫЙ) -->
+            <div id="catalog_level_1" style="display: flex; flex-direction: column; gap: 12px;">
+                
+                <!-- Соцсети -->
+                <div class="category-row-card" onclick="openCatalogLevel2('social')">
+                    <img src="icon_social.png" alt="Social" style="width: 54px; height: 54px; object-fit: contain; flex-shrink: 0;">
+                    <div>
+                        <h3>Соцсети</h3>
+                        <p>Продвижение Telegram, TikTok, ВКонтакте</p>
+                    </div>
+                </div>
+                
+                <!-- ИИ Нейросети (крупная иконка) -->
+                <div class="category-row-card" onclick="openCatalogLevelFinal('ai')">
+                    <img src="icon_ai.png" alt="AI" style="width: 84px; height: 84px; object-fit: contain; flex-shrink: 0;">
+                    <div>
+                        <h3>ИИ нейросети</h3>
+                        <p>Подписки на популярный искусственный интеллект</p>
+                    </div>
+                </div>
+                
+                <!-- Продвижение -->
+                <div class="category-row-card" onclick="openCatalogLevelFinal('promo')">
+                    <img src="icon_promo.png" alt="Promo" style="width: 54px; height: 54px; object-fit: contain; flex-shrink: 0;">
+                    <div>
+                        <h3>Продвижение</h3>
+                        <p>Готовые гайды, мануалы и паки продвижения</p>
+                    </div>
+                </div>
+                
+                <!-- Ключи софта -->
+                <div class="category-row-card" onclick="openCatalogLevelFinal('soft')">
+                    <img src="icon_keys.png" alt="Keys" style="width: 54px; height: 54px; object-fit: contain; flex-shrink: 0;">
+                    <div>
+                        <h3>Ключи софта</h3>
+                        <p>Лицензионные ключи активации Windows и ОС</p>
+                    </div>
+                </div>
+
+            </div>
+
 
             <div id="catalog_level_2_social" style="display: none; flex-direction: column; gap: 12px;">
                 <div class="category-row-card" onclick="openCatalogLevel3('tg')">
@@ -294,9 +448,18 @@
     </div>
 
     <div class="tab-bar">
-        <div class="nav-item active" onclick="navigateTabBar('welcome', this)"><span class="nav-icon">🏠</span><span>Главная</span></div>
-        <div class="nav-item" id="nav_catalog_btn" onclick="navigateTabBar('catalog', this)"><span class="nav-icon">📂</span><span>Каталог</span></div>
-        <div class="nav-item" onclick="navigateTabBar('cart', this)"><span class="nav-icon">🛒</span><span>Корзина</span></div>
+        <div class="nav-item active" onclick="navigateTabBar('welcome', this)">
+            <img src="nav_home.png" class="nav-icon-img" alt="Главная">
+            <span>Главная</span>
+        </div>
+        <div class="nav-item" id="nav_catalog_btn" onclick="navigateTabBar('catalog', this)">
+            <img src="nav_catalog.png" class="nav-icon-img" alt="Каталог">
+            <span>Каталог</span>
+        </div>
+        <div class="nav-item" onclick="navigateTabBar('cart', this)">
+            <img src="nav_cart.png" class="nav-icon-img" alt="Корзина">
+            <span>Корзина</span>
+        </div>
     </div>
 
     <!-- Модалка калькулятора -->
@@ -392,6 +555,101 @@
                 if (navigationHistoryStack.length === 0) tgApp.BackButton.hide();
             });
         }
+
+                // Новая функция: обрабатывает нажатие на нашу кнопку Назад
+        function executeCatalogBackNavigation() {
+            if (navigationHistoryStack.length > 0) {
+                let prevLevel = navigationHistoryStack.pop();
+                executeSwitchCatalogDOM(prevLevel.name, prevLevel.key);
+            }
+        }
+
+        function openCatalogLevel2(key) { 
+            navigationHistoryStack.push({name: '1', key: null}); 
+            executeSwitchCatalogDOM('2_social'); 
+        }
+        
+        function openCatalogLevel3(key) { 
+            navigationHistoryStack.push({name: '2_social', key: null}); 
+            executeSwitchCatalogDOM('3_tg_folders'); 
+        }
+        
+        function openCatalogLevelFinal(keyData) {
+            if (['ai', 'promo', 'soft'].includes(keyData)) {
+                navigationHistoryStack.push({name: '1', key: null});
+            } else {
+                // ИСПРАВЛЕНО: Добавлена пропущенная ветка и скобка, чтобы история не ломалась
+                let targetName = (activeTargetProduct === 'tg') ? '3_tg_folders' : '2_social';
+                navigationHistoryStack.push({name: targetName, key: activeTargetProduct});
+            }
+            executeSwitchCatalogDOM('final_products', keyData);
+        }
+
+        // Главный пульт управления каталогом: здесь настраивается показ кнопки Назад
+        function executeSwitchCatalogDOM(levelName, keyData = null) {
+            const lvl1 = document.getElementById('catalog_level_1'); 
+            const lvl2 = document.getElementById('catalog_level_2_social');
+            const lvl3 = document.getElementById('catalog_level_3_tg_folders'); 
+            const lvlFinal = document.getElementById('catalog_level_final_products');
+            const backBtn = document.getElementById('customCatalogBackBtn');
+
+            lvl1.style.display = levelName === '1' ? 'flex' : 'none'; 
+            lvl2.style.display = levelName === '2_social' ? 'flex' : 'none';
+            lvl3.style.display = levelName === '3_tg_folders' ? 'flex' : 'none'; 
+            lvlFinal.style.display = levelName === 'final_products' ? 'grid' : 'none';
+
+            // Автоматическое управление отображением кнопки Назад во всех разделах
+            if (levelName === '1') {
+                backBtn.style.display = 'none';
+            } else {
+                backBtn.style.display = 'flex';
+            }
+
+            if (levelName === '2_social') activeTargetProduct = 'social';
+            
+            if (levelName === '3_tg_folders') {
+                activeTargetProduct = 'tg'; 
+                lvl3.innerHTML = '';
+                tgFolders.forEach(folder => {
+                    const block = document.createElement('div'); 
+                    block.className = 'card';
+                    block.style = "padding: 18px; flex-direction: row; justify-content: space-between; align-items: center; font-size: 12px; border: 1px solid #27272a; background: #18181b; margin-bottom: 8px;";
+                    block.innerHTML = `<span>${folder.name}</span> <span style="color: #52525b;">→</span>`;
+                    block.onclick = () => { 
+                        if (folder.id === 'tg_spamblock') openOrderCalculationModal(dataProducts.tg_spamblock); 
+                        else openCatalogLevelFinal(folder.id); 
+                    };
+                    lvl3.appendChild(block);
+                });
+            }
+            
+            if (levelName === 'final_products') {
+                lvlFinal.innerHTML = ''; 
+                let targetArray = dataProducts[keyData] || [];
+                targetArray.forEach(prod => {
+                    const itemCard = document.createElement('div'); 
+                    itemCard.className = 'card';
+                    itemCard.innerHTML = `<img src="${prod.img}" alt="Preview"><div class="card-info"><div class="title">${prod.name}</div><div class="price-row"><div class="price">${prod.price} ₽${prod.countable ? ' / шт.' : ''}</div><div class="add-badge">+</div></div></div>`;
+                    itemCard.onclick = () => openOrderCalculationModal(prod); 
+                    lvlFinal.appendChild(itemCard);
+                });
+            }
+        }
+
+        function navigateTabBar(screen, tabNode) {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            tabNode.classList.add('active');
+            document.getElementById('screen_welcome').style.display = screen === 'welcome' ? 'block' : 'none';
+            document.getElementById('screen_catalog').style.display = screen === 'catalog' ? 'block' : 'none';
+            document.getElementById('screen_cart').style.display = screen === 'cart' ? 'block' : 'none';
+            
+            if (screen === 'catalog') {
+                // При клике на вкладку каталога в меню сбрасываем историю на ноль и открываем 1-й уровень
+                navigationHistoryStack = []; 
+                executeSwitchCatalogDOM('1');
+            }
+        }
+
 
         function saveCartToLocalStorage() {
             localStorage.setItem('gayer_cart_session', JSON.stringify(cartState));
@@ -566,13 +824,8 @@
         function processCheckoutSubmit() {
             if (cartState.length === 0) return;
             
-            let username = tgApp?.initDataUnsafe?.user?.username ? `@${tgApp.initDataUnsafe.user.username}` : 'Покупатель';
-            let userId = tgApp?.initDataUnsafe?.user?.id || 'Не определен';
-            
             // Собираем красивый и четкий текст заказа
             let checkTextMessage = `📦 НОВЫЙ ЗАКАЗ\n`;
-            checkTextMessage += `👤 Клиент: ${username}\n`;
-            checkTextMessage += `🆔 ID: ${userId}\n`;
             checkTextMessage += `-------------------------\n\n`;
             
             let finalSum = 0;
@@ -624,6 +877,20 @@
         function goToAdminChatLink() {
             let adminLink = "https://t.me/Smeshnoy_Ny_Tema";
             
+            // 1. Очищаем массив корзины в памяти страницы
+            cartState = [];
+            
+            // 2. Сохраняем пустую корзину в LocalStorage телефона и обновляем экран корзины в фоне
+            localStorage.setItem('gayer_cart_session', JSON.stringify(cartState));
+            renderCartScreenDOM();
+            
+            // 3. Закрываем всплывающее окно с чеком, чтобы оно не висело при возврате
+            const modal = document.getElementById('checkoutReceiptModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+            
+            // 4. Перенаправляем пользователя напрямую к администратору
             if (tgApp && typeof tgApp.openTelegramLink === "function") {
                 tgApp.openTelegramLink(adminLink);
             } else {
