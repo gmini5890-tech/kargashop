@@ -3,7 +3,7 @@
 // ==========================================================================
 
 // 👑 ВПИШИТЕ СЮДА РЕАЛЬНЫЕ TELEGRAM ID ДВУХ АДМИНОВ ЧЕРЕЗ ЗАПЯТУЮ:
-const ADMIN_TELEGRAM_IDS = [6223354410, 5451726899]; 
+const ADMIN_TELEGRAM_IDS = []; 
 const tgApp = window.Telegram?.WebApp;
 
 if (tgApp) { 
@@ -518,11 +518,34 @@ function checkoutAndCreateOrder() {
     
     localStorage.setItem('gayer_global_orders', JSON.stringify(globalOrdersBase));
     
-    alert("Заказ " + id + " успешно сформирован!");
+    // 🚀 СИНХРОНИЗАЦИЯ С ВАШИМ HTML: Заполняем попап чека данными
+    const successModal = document.getElementById('checkoutModal');
+    const successTextarea = document.getElementById('checkoutInvoiceTextarea');
+    
+    if (successModal && successTextarea) {
+        let checkText = "Заказ: " + id + "\nПокупатель: " + currentUser.name + " (@" + currentUser.username + ")\n\n" + summary + "\nИтого к оплате: " + total.toFixed(2) + " ₽";
+        successTextarea.value = checkText;
+        successModal.style.display = 'flex'; // Показываем окно заказа
+    } else {
+        alert("Заказ " + id + " успешно сформирован!");
+    }
+    
     cartState = []; 
     saveCartToLocalStorage(); 
     navigateTabBar('crm', document.querySelector('.nav-item:last-child'));
 }
+
+// 📋 Функция для работы вашей кнопки копирования чека
+function copyInvoiceToClipboard() {
+    const textarea = document.getElementById('checkoutInvoiceTextarea');
+    if (textarea) {
+        textarea.select();
+        textarea.setSelectionRange(0, 99999); // Поддержка мобильных устройств
+        navigator.clipboard.writeText(textarea.value);
+        alert("Чек успешно скопирован в буфер обмена! 👍");
+    }
+}
+
 
 function renderCrmScreenDOM() {
     globalOrdersBase = JSON.parse(localStorage.getItem('gayer_global_orders')) || [];
