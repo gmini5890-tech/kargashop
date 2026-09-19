@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GayerShop — Магазин услуг</title>
+    <!-- Подключение стилей -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- ================= ЭКРАН 1: ГЛАВНАЯ (WELCOME) ================= -->
+        <div id="screen_welcome" style="display: block;">
+            <div class="welcome-box">
+                <h2>Добро пожаловать в GayerShop! 🚀</h2>
+                <p style="font-size: 13px; color: #a1a1aa; margin: 12px 0 20px 0; font-weight: normal !important; line-height: 1.5;">
+                    Ваш надёжный проводник в мире цифровых услуг и продвижения. Настраивайте состав в калькуляторе товара и просматривайте историю заказов прямо здесь.
+                </p>
+                <button class="btn" onclick="navigateTabBar('catalog', document.getElementById('nav_catalog_btn'))">
+                    Перейти в каталог →
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= ЭКРАН 2: КАТАЛОГ (CATALOG) ================= -->
+        <div id="screen_catalog" style="display: none;">
+            <div class="search-wrapper">
+                <input type="text" id="catalogSearchInput" class="input-qty" placeholder="Поиск услуг... 🔍" style="text-align: left; padding-left: 16px; margin-top: 0; margin-bottom: 12px;">
+                <div class="tags-container" style="display: none;">
+                    <div id="tag_all" class="tag-pill active" onclick="filterCatalogByPillTag('all')">Все</div>
+                    <div id="tag_tg" class="tag-pill" onclick="filterCatalogByPillTag('tg')">Telegram</div>
+                    <div id="tag_tiktok" class="tag-pill" onclick="filterCatalogByPillTag('tiktok')">TikTok</div>
+                    <div id="tag_vk" class="tag-pill" onclick="filterCatalogByPillTag('vk')">ВКонтакте</div>
+                    <div id="tag_soft" class="tag-pill" onclick="filterCatalogByPillTag('soft')">ИИ и Софт</div>
+                </div>
+            </div>
+
+            <button id="customCatalogBackBtn" class="catalog-back-btn" onclick="executeCatalogBackNavigation()">← Назад</button>
+
+            <!-- УРОВЕНЬ 1: Основные разделы -->
+            <div id="catalog_level_1" style="display: flex; flex-direction: column;">
+                <div class="category-row-card" onclick="openCatalogLevel2('social')">
+                    <span style="font-size: 24px;">🌐</span>
+                    <div>
+                        <h4>Social</h4>
+                        <div style="font-size: 11px; color: #71717a; font-weight: normal !important; margin-top: 2px;">Explicit Соцсети (Telegram, TikTok, ВКонтакте)</div>
+                    </div>
+                </div>
+                <div class="category-row-card" onclick="openCatalogLevelFinal('ai')">
+                    <span style="font-size: 24px;">🤖</span>
+                    <div>
+                        <h4>AI</h4>
+                        <div style="font-size: 11px; color: #71717a; font-weight: normal !important; margin-top: 2px;">ИИ нейросети и подписки</div>
+                    </div>
+                </div>
+                <div class="category-row-card" onclick="openCatalogLevelFinal('promo')">
+                    <span style="font-size: 24px;">📈</span>
+                    <div>
+                        <h4>Promo</h4>
+                        <div style="font-size: 11px; color: #71717a; font-weight: normal !important; margin-top: 2px;">Продвижение (гайды, мануалы, паки)</div>
+                    </div>
+                </div>
+                <div class="category-row-card" onclick="openCatalogLevelFinal('soft')">
+                    <span style="font-size: 24px;">💻</span>
+                    <div>
+                        <h4>Keys</h4>
+                        <div style="font-size: 11px; color: #71717a; font-weight: normal !important; margin-top: 2px;">Ключи софта и активация ОС</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==========================================================================
+            📸 КАРТОЧКИ СОЦСЕТЕЙ С ЛОГОТИПАМИ (ЗАМЕНА СМАЙЛИКОВ НА КАРТИНКИ)
+            ========================================================================== -->
+            <div class="grid social-grid-layout" id="catalog_level_2_social" style="display: none;">
+                
+                <!-- Карточка Telegram -->
+                <div class="card" onclick="openCatalogLevel3('tg')">
+                    <div style="text-align:center; padding:15px; background:#27272a; border-bottom:1px solid rgba(37, 99, 235, 0.15); line-height:0;">
+                        <img src="telegram_logo.png" class="social-logo-img" alt="Telegram">
+                    </div>
+                    <div class="card-info">
+                        <div class="title" style="text-align:center; height:auto;">TG (Telegram)</div>
+                    </div>
+                </div>
+
+                <!-- Карточка TikTok -->
+                <div class="card" onclick="openCatalogLevelFinal('tiktok')">
+                    <div style="text-align:center; padding:15px; background:#27272a; border-bottom:1px solid rgba(37, 99, 235, 0.15); line-height:0;">
+                        <img src="tiktok_logo.png" class="social-logo-img" alt="TikTok">
+                    </div>
+                    <div class="card-info">
+                        <div class="title" style="text-align:center; height:auto;">TT (TikTok)</div>
+                    </div>
+                </div>
+
+                <!-- Карточка ВКонтакте -->
+                <div class="card" onclick="openCatalogLevelFinal('vk')">
+                    <div style="text-align:center; padding:15px; background:#27272a; border-bottom:1px solid rgba(37, 99, 235, 0.15); line-height:0;">
+                        <img src="vk_logo.png" class="social-logo-img" alt="VK">
+                    </div>
+                    <div class="card-info">
+                        <div class="title" style="text-align:center; height:auto;">VK (ВКонтакте)</div>
+                    </div>
+                </div>
+
+                    <!-- Карточка YouTube (В разработке) -->
+                <div class="card" onclick="alert('Эта вкладка еще в разработке ⚙️')">
+                    <div style="text-align:center; padding:15px; background:#27272a; border-bottom:1px solid rgba(37, 99, 235, 0.15); line-height:0;">
+                        <img src="youtube_logo.png" class="social-logo-img" alt="YouTube">
+                    </div>
+                    <div class="card-info">
+                        <div class="title" style="text-align:center; height:auto;">YT (YouTube)</div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <!-- Контейнеры динамических уровней -->
+            <div id="catalog_level_3_tg_folders" style="display: none; flex-direction: column;"></div>
+            <div id="catalog_level_final_products" class="grid" style="display: none;"></div>
+        </div>
+        <!-- ================= ЭКРАН 3: КОРЗИНА (CART) ================= -->
+        <div id="screen_cart" style="display: none;">
+            <div class="cart-title-row">
+                <h3>Корзина</h3>
+                <span class="cart-clear-btn" onclick="cartState=[]; saveCartToLocalStorage();">Очистить</span>
+            </div>
+            <div id="cartItemsContainer"></div>
+            <div class="cart-summary-box">
+                <div class="summary-row"><span>Товаров в корзине:</span><span id="cart_total_qty">0 шт.</span></div>
+                <div class="summary-row" style="border-top:1px solid #27272a; padding-top:12px;"><span>Итого к оплате:</span><span id="cart_total_price" class="summary-total-price">0.00 ₽</span></div>
+            </div>
+            <button class="btn" style="margin-top: 24px;" onclick="checkoutAndCreateOrder()">👛 Сформировать заказ</button>
+        </div>
+
+        <!-- ================= ЭКРАН 4: ПРОФИЛЬ ПОКУПАТЕЛЯ ================= -->
+        <div id="screen_crm" style="display: none;">
+            <div class="profile-header-card">
+                <h3 id="profile_name">Покупатель</h3>
+                <div id="profile_username" style="font-size: 12px; color: #71717a; margin-top: 4px;">@local_user</div>
+            </div>
+            
+            <!-- Переименовали для наглядности -->
+            <h4 style="margin-bottom: 12px; font-size: 14px; color: #2563eb;">📋 История моих покупок:</h4>
+            
+            <div id="crmOrdersContainer"></div>
+        </div>
+
+
+        <!-- ================= МЕНЮ С ОБНОВЛЕННЫМИ КРУПНЫМИ ИКОНКАМИ ================= -->
+        <div class="tab-bar">
+            <div class="nav-item active" onclick="navigateTabBar('welcome', this)">
+                <span style="font-size: 20px; line-height: 22px; display: block; margin-bottom: 2px;">🏠</span>
+                <span>Главная</span>
+            </div>
+            <div id="nav_catalog_btn" class="nav-item" onclick="navigateTabBar('catalog', this)">
+                <span style="font-size: 20px; line-height: 22px; display: block; margin-bottom: 2px;">🗂</span>
+                <span>Каталог</span>
+            </div>
+            <div class="nav-item" onclick="navigateTabBar('cart', this)">
+                <span style="font-size: 20px; line-height: 22px; display: block; margin-bottom: 2px;">🛒</span>
+                <span>Корзина</span>
+            </div>
+            <div class="nav-item" onclick="navigateTabBar('crm', this)">
+                <span style="font-size: 20px; line-height: 22px; display: block; margin-bottom: 2px;">👤</span>
+                <span>Профиль</span>
+            </div>
+        </div>
+    </div>
+    <!-- МОДАЛКА ЛАЙВ-КАЛЬКУЛЯТОРА -->
+    <div id="orderModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="document.getElementById('orderModal').style.display='none'">×</button>
+            <!-- Изменили cover на contain и настроили адаптивную высоту -->
+            <img id="modalProductImg" src="" style="width: 100%; height: auto; max-height: 180px; object-fit: contain; border-radius: 10px; margin-bottom: 12px; display: none;">
+            <h4 id="modalTitle">Название услуги</h4>
+            <div id="quantityBlock">
+                <label style="font-size: 11px; color: #a1a1aa; display: block; text-align: left; margin-bottom: 4px;">Укажите количество для заказа:</label>
+                <input type="number" id="itemQuantity" class="input-qty" value="1" min="1">
+            </div>
+            <select id="emojiSelector" class="select-emoji">
+                <option value="👍">👍 Позитивный лайк</option>
+                <option value="❤️">❤️ Сердце</option>
+                <option value="🔥">🔥 Огонь</option>
+                <option value="🎉">🎉 Праздник</option>
+            </select>
+            <div style="margin-top:20px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid #27272a; padding-top:14px;">
+                <span style="font-size:12px; color:#a1a1aa;">Рассчитанная стоимость:</span>
+                <span id="modalTotalPrice" style="font-size:16px; color:#2563eb; font-weight:bold;">0.00 ₽</span>
+            </div>
+            <button id="modalSubmitBtn" class="btn" onclick="addItemToCartAction()">Добавить в корзину</button>
+        </div>
+    </div>
+
+    <!-- ПОПАП ЧЕКА -->
+    <div id="checkoutModal" class="modal" style="display: none;">
+        <div class="checkout-content">
+            <button class="modal-close-btn" onclick="document.getElementById('checkoutModal').style.display='none'">×</button>
+            <h4 style="color: #ffffff; text-align: center; margin-bottom: 12px;">🛒 Заказ сформирован!</h4>
+            <textarea id="checkoutInvoiceTextarea" class="checkout-textarea" readonly></textarea>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 14px;">
+                <button class="btn" style="margin-top: 0; background: #10b981;" onclick="copyInvoiceToClipboard()">📋 Скопировать чек</button>
+                <!-- Полная прямая ссылка на ваш личный аккаунт Telegram -->
+                <button class="btn-main" onclick="window.open('https://t.me/Smeshnoy_Ny_Tema', '_blank')">💬 Перейти к @Smeshnoy_Ny_Tema</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Подключение твоей внешней чистой логики из script.js -->
+    <script src="script.js"></script>
+</body>
+</html>
+
+

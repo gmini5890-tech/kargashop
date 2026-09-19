@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GayerShop — ПАНЕЛЬ АДМИНИСТРАТОРА 👑</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="profile-header-card" style="border-color: #2563eb; box-shadow: 0 0 15px rgba(37, 99, 235, 0.2);">
+            <h3 style="color: #2563eb;">Панель Administrator CRM 👑</h3>
+            <div style="font-size: 11px; color: #a1a1aa; margin-top: 4px;">Управление заказами и проверка клиентов по ID</div>
+        </div>
+
+        <!-- Поиск истории покупок клиента по его Telegram ID или Имени -->
+        <div class="welcome-box" style="text-align: left; padding: 16px; margin-bottom: 20px; border-color: #2563eb;">
+            <label style="font-size: 11px; color: #a1a1aa; display: block; margin-bottom: 6px; font-weight: bold;">🔍 ПОИСК ПОКУПАТЕЛЯ (Введите Telegram ID или Имя):</label>
+            <input type="text" id="adminSearchInput" class="input-qty" placeholder="Например: 999999..." style="text-align: left; padding-left: 14px; margin-top: 0;">
+        </div>
+
+        <div class="cart-title-row" style="margin-top: 10px; margin-bottom: 12px;">
+            <h4 id="adminListTitle">Все active-заявки в базе</h4>
+            <span class="cart-clear-btn" style="color: #ef4444; cursor: pointer;" onclick="clearDatabase()">Очистить CRM</span>
+        </div>
+        
+        <div id="adminOrdersContainer"></div>
+    </div>
+
+    <script>
+        let globalOrdersBase = [];
+
+        function loadAndRenderAdminCRM() {
+            // Считываем общую базу данных из localStorage браузера
+            globalOrdersBase = JSON.parse(localStorage.getItem('gayer_global_orders')) || [];
+            let searchQuery = document.getElementById('adminSearchInput')?.value.toLowerCase().trim() || '';
+            const container = document.getElementById('adminOrdersContainer');
+            const listTitle = document.getElementById('adminListTitle');
+            if (!container) return;
+            container.innerHTML = '';
+
+            // Шаг 1: Сначала убираем заказы, которые админ скрыл кнопкой «Удалить»
+            let filteredOrders = globalOrdersBase.filter(order => order.hiddenByAdmin !== true);
+
+            // Шаг 2 (Выполнение ТЗ №2): Если строка поиска пустая — заказы со статусом DONE скрываются
+            if (searchQuery !== '') {
+                filteredOrders = filteredOrders.filter(order => 
+                    String(order.userId).toLowerCase().includes(searchQuery) || 
+                    String(order.clientName).toLowerCase().includes(searchQuery) ||
+                    String(order.username).toLowerCase().includes(searchQuery) ||
+                    String(order.orderId).toLowerCase().includes(searchQuery)
+                );
+                listTitle.innerText = `Результаты поиска для: "${searchQuery}"`;
+            } else {
+                filteredOrders = filteredOrders.filter(order => order.status !== 'done');
+                listTitle.innerText = "Все active-заявки в базе";
+            }
+
+            if (filteredOrders.length === 0) {
+                container.innerHTML = '<div style="color: #71717a; font-size: 12px; text-align: center; padding: 40px 0;">Заказов по данному запросу не найдено / Лента пуста 📦</div>';
+                return;
+            }
+
+            filteredOrders.forEach(order => {
+                const crmCard = document.createElement('div');
+                crmCard.className = 'crm-card';
+
+                // Подставляем красивые стили для трех видов статусов
+                let statusClass = 'status-pending';
+                if (order.status === 'ready') statusClass = 'status-ready';
+                if (order.status === 'done') statusClass = 'status-done';
+
+                crmCard.innerHTML = `
+                    <div class="crm-meta">
+                        <span>Заказ № ${order.orderId}</span>
+                        <span class="crm-status ${statusClass}">${order.status.toUpperCase()}</span>
+                    </div>
+                    <div style="font-size: 11px; color: #a1a1aa; margin-top: 4px; font-weight: normal !important;">
+                        ID Покупателя: <b style="color: #2563eb;">${order.userId}</b> (${order.clientName})
+                    </div>
+                    <div class="crm-items" style="color: #e4e4e7; margin: 6px 0; white-space: pre-wrap;">${order.itemsText}</div>
+                    <div style="font-size: 12px; color: #ffffff; margin-bottom: 8px;">Итого: <span style="color: #2563eb; font-weight: bold;">${Number(order.totalAmount).toFixed(2)} ₽</span></div>
+                    <div class="crm-actions" id="actions-${order.orderId}" style="display:flex; gap:8px; margin-top:10px; border-top:1px solid #27272a; padding-top:8px;"></div>
+                `;
+                
+                container.appendChild(crmCard);
+
+                const actionsBlock = document.getElementById(`actions-${order.orderId}`);
+                if (actionsBlock) {
+                    
+                    // Шаг 3 (Выполнение ТЗ №1): Умный переключатель статусов
+                    if (order.status !== 'done') {
+                        const acceptBtn = document.createElement('button');
+                        acceptBtn.className = 'crm-subbtn';
+                        acceptBtn.style.cursor = 'pointer';
+                        
+                        if (order.status === 'pending') {
+                            acceptBtn.style.backgroundColor = '#2563eb'; // Синий
+                            acceptBtn.innerText = '🟢 Перевести в READY';
+                            acceptBtn.onclick = () => updateStatus(order.orderId, 'ready');
+                        } else if (order.status === 'ready') {
+                            acceptBtn.style.backgroundColor = '#10b981'; // Зеленый
+                            acceptBtn.innerText = '✅ Завершить (в DONE)';
+                            acceptBtn.onclick = () => updateStatus(order.orderId, 'done');
+                        }
+                        actionsBlock.appendChild(acceptBtn);
+                    }
+
+                    // Шаг 4 (Безопасное удаление): Скрывает у админа, оставляет у покупателя
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'crm-subbtn';
+                    deleteBtn.style.backgroundColor = '#ef4444';
+                    deleteBtn.style.cursor = 'pointer';
+                    deleteBtn.innerText = '❌ Удалить';
+                    deleteBtn.onclick = () => deleteOrderIsolate(order.orderId);
+                    actionsBlock.appendChild(deleteBtn);
+                }
+            });
+        }
+
+        // Обновление статусов
+        function updateStatus(orderId, newStatus) {
+            let target = globalOrdersBase.find(o => o.orderId === orderId);
+            if (target) {
+                target.status = newStatus;
+                localStorage.setItem('gayer_global_orders', JSON.stringify(globalOrdersBase));
+                loadAndRenderAdminCRM();
+                if (newStatus === 'done') {
+                    alert(`Заказ ${orderId} завершен и скрыт из активных заявок.`);
+                }
+            }
+        }
+
+
+        // Изолированное удаление: скрывает у админа ТОЛЬКО выполненные заказы, защищая активные!
+        function deleteOrderIsolate(orderId) {
+            let target = globalOrdersBase.find(o => o.orderId === orderId);
+            
+            if (!target) return;
+
+            // ЖЕСТКАЯ БЛОКИРОВКА: Запрещаем скрывать невыполненные заказы
+            if (target.status !== 'done') {
+                alert(`⛔️ ОШИБКА: Нельзя удалить активный заказ! \nСначала переведите его в статус DONE (завершите его), и только после этого его можно будет убрать из базы.`);
+                return;
+            }
+
+            if (confirm(`Скрыть выполненный заказ ${orderId} из панели админа? Покупатель продолжит видеть его.`)) {
+                target.hiddenByAdmin = true;
+                localStorage.setItem('gayer_global_orders', JSON.stringify(globalOrdersBase));
+                loadAndRenderAdminCRM();
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadAndRenderAdminCRM();
+            document.getElementById('adminSearchInput')?.addEventListener('input', loadAndRenderAdminCRM);
+            // Автообновление раз в 2 секунды для ловли новых заказов покупателя
+            setInterval(loadAndRenderAdminCRM, 2000);
+        });
+    </script>
+</body>
+</html>
