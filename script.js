@@ -3,7 +3,7 @@
 // ==========================================================================
 
 // 👑 ВПИШИТЕ СЮДА РЕАЛЬНЫЕ TELEGRAM ID ДВУХ АДМИНОВ ЧЕРЕЗ ЗАПЯТУЮ:
-const ADMIN_TELEGRAM_IDS = []; 
+const ADMIN_TELEGRAM_IDS = [6223354410, 5451726899]; 
 const tgApp = window.Telegram?.WebApp;
 
 if (tgApp) { 
