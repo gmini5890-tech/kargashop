@@ -2,11 +2,15 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GayerShop — Магазин услуг</title>
-    <!-- Подключение стилей -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GayerShop</title>
+    
+    <!-- 🚀 ОФИЦИАЛЬНЫЙ СКРИПТ ТЕЛЕГРАМА (ДОБАВИТЬ СЮДА): -->
+    <script src="https://telegram.org"></script>
+    
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
 
     <div class="app-container">
@@ -196,7 +200,7 @@
         </div>
     </div>
 
-    <!-- ПОПАП ЧЕКА -->
+     <!-- ПОПАП ЧЕКА (ВСТАВИТЬ СТРОГО СЮДА) -->
     <div id="checkoutModal" class="modal" style="display: none;">
         <div class="checkout-content">
             <button class="modal-close-btn" onclick="document.getElementById('checkoutModal').style.display='none'">×</button>
@@ -204,15 +208,12 @@
             <textarea id="checkoutInvoiceTextarea" class="checkout-textarea" readonly></textarea>
             <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 14px;">
                 <button class="btn" style="margin-top: 0; background: #10b981;" onclick="copyInvoiceToClipboard()">📋 Скопировать чек</button>
-                <!-- Полная прямая ссылка на ваш личный аккаунт Telegram -->
                 <button class="btn-main" onclick="window.open('https://t.me/Smeshnoy_Ny_Tema', '_blank')">💬 Перейти к @Smeshnoy_Ny_Tema</button>
             </div>
         </div>
     </div>
 
-    <!-- Подключение твоей внешней чистой логики из script.js -->
+    <!-- Подключение вашего скрипта (всегда идет в самом конце) -->
     <script src="script.js"></script>
 </body>
 </html>
-
-
